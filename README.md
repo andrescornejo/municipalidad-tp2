@@ -3,3 +3,6 @@
 
 Estudiante: Andrés Cornejo 
 Carnet: 2017147856
+
+Estudiante: Pablo Alpízar
+Carnet: 2019004417
