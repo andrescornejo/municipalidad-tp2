@@ -53,10 +53,12 @@ BEGIN
 
 		INSERT UsuarioVsPropiedad (
 			idUsuario,
-			idPropiedad
+			idPropiedad,
+			activo
 			)
 		SELECT U.id,
-			P.id
+			P.id,
+			1
 		FROM @tmpUSvsProp tmp
 		JOIN Usuario U ON U.username = tmp.nombreUsuario
 		JOIN Propiedad P ON P.NumFinca = tmp.NumFinca

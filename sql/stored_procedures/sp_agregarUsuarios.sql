@@ -55,11 +55,13 @@ BEGIN
 		INSERT Usuario (
 			username,
 			passwd,
-			isAdmin
+			isAdmin,
+			activo
 			)
 		SELECT t.nombre,
 			t.passwd,
-			0
+			0,
+			1
 		FROM @tmpUsuario t
 
 		COMMIT

@@ -54,11 +54,13 @@ BEGIN
 		INSERT dbo.CCenPropiedad (
 			idConceptoCobro,
 			idPropiedad,
-			fechaInicio
+			fechaInicio,
+			activo
 			)
 		SELECT cp.idcobro,
 			P.id,
-			@fechaInput
+			@fechaInput,
+			1
 		FROM @tmpCCenProp AS cp
 		JOIN Propiedad P ON P.NumFinca = cp.NumFinca
 

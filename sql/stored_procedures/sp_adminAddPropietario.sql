@@ -28,12 +28,13 @@ BEGIN
 		INSERT Propietario (
 			nombre,
 			valorDocID,
-			idTipoDocID
+			idTipoDocID,
+			activo
 			)
 		SELECT @inputName,
 			@inputDocIDVal,
-			@DocidID
-
+			@DocidID,
+			1
 		COMMIT
 
 		RETURN 1

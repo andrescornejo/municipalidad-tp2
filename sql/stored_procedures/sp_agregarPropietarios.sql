@@ -69,11 +69,13 @@ BEGIN
 		INSERT dbo.Propietario (
 			nombre,
 			idTipoDocID,
-			valorDocID
+			valorDocID,
+			activo
 			)
 		SELECT tp.nombre,
 			tp.idTipoDocID,
-			tp.valorDocID
+			tp.valorDocID,
+			1
 		FROM @tmpPropiet tp
 
 		COMMIT

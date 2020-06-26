@@ -25,7 +25,9 @@ BEGIN
 			p.valorDocID AS 'Documento Legal'
 		FROM Propietario p
 		JOIN PropiedadDelPropietario pdp ON pdp.idPropietario = p.id
+			AND pdp.activo = 1
 		WHERE @idPropiedad = pdp.idPropiedad
+		AND p.activo = 1
 	END TRY
 
 	BEGIN CATCH

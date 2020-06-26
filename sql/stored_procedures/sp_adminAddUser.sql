@@ -23,12 +23,13 @@ BEGIN
 		INSERT Usuario (
 			username,
 			passwd,
-			isAdmin
+			isAdmin,
+			activo
 			)
 		SELECT @inputUsername,
 			@inputPasswd,
-			@inputBit
-
+			@inputBit,
+			1
 		COMMIT
 
 		RETURN 1

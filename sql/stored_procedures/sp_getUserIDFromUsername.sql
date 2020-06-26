@@ -21,6 +21,7 @@ BEGIN
 				SELECT TOP 1 u.id
 				FROM Usuario u
 				WHERE u.username = @inputUsername
+				AND u.activo = 1
 				)
 
 		--PRINT (@outputID)

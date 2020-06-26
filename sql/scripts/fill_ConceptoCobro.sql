@@ -11,7 +11,7 @@ SET IDENTITY_INSERT ConceptoCobro ON
 DECLARE @ConceptoCobroXML XML;
 
 SELECT @ConceptoCobroXML = C
-FROM openrowset(BULK 'C:\xml\concepto_cobro.xml', single_blob) AS ConceptoCobro(C)
+FROM openrowset(BULK 'C:\xml\ConceptoCobro.xml', single_blob) AS ConceptoCobro(C)
 
 EXEC sp_xml_preparedocument @hdoc OUT,
 	@ConceptoCobroXML
@@ -23,7 +23,8 @@ INSERT dbo.ConceptoCobro (
 	DiaEmisionRecibo,
 	QDiasVencimiento,
 	EsRecurrente,
-	EsImpuesto
+	EsImpuesto,
+	activo
 	)
 SELECT id,
 	Nombre,
@@ -31,7 +32,8 @@ SELECT id,
 	DiaCobro,
 	QDiasVencimiento,
 	EsRecurrente,
-	EsImpuesto
+	EsImpuesto,
+	1
 FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 		id INT,
 		Nombre NVARCHAR(MAX),
@@ -44,36 +46,47 @@ FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 
 INSERT dbo.CC_ConsumoAgua (
 	id,
-	ConsumoM3
+	MontoM3,
+	activo
 	)
 SELECT id,
-	ConsumoM3
-FROM openxml(@hdoc, '/Conceptos_de_Cobro/ccagua', 1) WITH (
+	ValorM3,
+	1
+FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 		id INT,
-		ConsumoM3 INT
-		)
+		ValorM3 MONEY,
+		TipoCC NVARCHAR(10)
+		) AS X
+WHERE X.TipoCC = 'CC Consumo'
 
 INSERT dbo.CC_Porcentaje (
 	id,
-	ValorPorcentaje
-	)
+	ValorPorcentaje,
+	activo)
 SELECT id,
-	ValorPorcentaje
-FROM openxml(@hdoc, '/Conceptos_de_Cobro/ccporcentual', 1) WITH (
+	ValorPorcentaje,
+	1
+FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 		id INT,
-		ValorPorcentaje FLOAT
-		)
+		ValorPorcentaje FLOAT,
+		TipoCC NVARCHAR(13)
+		) AS X
+WHERE X.TipoCC = 'CC Porcentaje'
 
 INSERT dbo.CC_Fijo (
 	id,
-	MontoFijo
+	Monto,
+	activo
 	)
 SELECT id,
-	Monto
-FROM openxml(@hdoc, '/Conceptos_de_Cobro/ccfijo', 1) WITH (
-		id INT,
-		Monto MONEY
-		)
+	Monto,
+	1
+FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
+	id INT,
+	Monto MONEY,
+	TipoCC NVARCHAR(7)
+	) AS X
+WHERE X.TipoCC = 'CC Fijo'
 
 SELECT *
 FROM ConceptoCobro

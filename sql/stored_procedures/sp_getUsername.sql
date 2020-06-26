@@ -17,6 +17,7 @@ BEGIN
 
 		SELECT u.username AS 'Nombre de usuario'
 		FROM Usuario u
+		WHERE u.activo = 1
 	END TRY
 
 	BEGIN CATCH

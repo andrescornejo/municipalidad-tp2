@@ -18,15 +18,16 @@ EXEC sp_xml_preparedocument @hdoc OUT,
 
 INSERT dbo.TipoDocID (
 	id,
-	nombre
+	nombre,
+	activo
 	)
 SELECT codigoDoc,
-	descripcion
+	descripcion,
+	1
 FROM openxml(@hdoc, '/TipoDocIdentidad/TipoDocId', 1) WITH (
 		codigoDoc INT,
 		descripcion NVARCHAR(MAX)
 		)
-
 SELECT *
 FROM TipoDocID
 
