@@ -53,10 +53,12 @@ BEGIN
 
 		INSERT dbo.PropiedadDelPropietario (
 			idPropiedad,
-			idPropietario
+			idPropietario,
+			activo
 			)
 		SELECT PO.id,
-			P.id
+			P.id,
+			1
 		FROM @tmpProtxProp AS pp
 		JOIN Propietario P ON P.valorDocID = pp.identificacion
 		JOIN Propiedad PO ON PO.NumFinca = pp.NumFinca

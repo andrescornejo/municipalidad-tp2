@@ -12,6 +12,7 @@ BEGIN
 
     SELECT u.username AS 'Nombre de usuario',u.passwd AS 'Contraseña', u.isAdmin as 'Administrador'
     FROM Usuario u
+    WHERE u.activo = 1
     order by u.username
 
 END

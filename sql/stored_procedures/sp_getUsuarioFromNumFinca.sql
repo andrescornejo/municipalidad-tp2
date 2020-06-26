@@ -20,7 +20,9 @@ begin
 		SELECT u.username as 'Nombre de usuario', u.isAdmin 'Estado Administrador'
 		FROM Usuario u
 		JOIN UsuarioVsPropiedad uvp ON uvp.idUsuario = u.id
+		AND uvp.activo = 1
 		WHERE @idPropiedad = uvp.idPropiedad
+		AND u.activo = 1
 
 	end try
 	begin catch

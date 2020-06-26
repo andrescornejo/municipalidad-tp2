@@ -21,6 +21,7 @@ BEGIN
 				SELECT TOP 1 p.id
 				FROM Propietario p
 				WHERE p.valorDocID = @inputDocID
+				AND p.activo = 1
 				)
 
 		RETURN @outputID

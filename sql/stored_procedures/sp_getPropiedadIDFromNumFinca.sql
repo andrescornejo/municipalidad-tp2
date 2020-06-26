@@ -21,6 +21,7 @@ BEGIN
 				SELECT TOP 1 p.id
 				FROM Propiedad P
 				WHERE p.NumFinca = @inputNumFinca
+				AND p.activo = 1
 				)
 
 		RETURN @outputID

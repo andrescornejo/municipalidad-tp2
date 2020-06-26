@@ -16,5 +16,6 @@ BEGIN
 		P.valor AS [Valor],
 		P.Direccion AS [Direccion]
 	FROM Propiedad P
+	WHERE P.activo = 1
 END
 	--EXEC csp_getPropiedades

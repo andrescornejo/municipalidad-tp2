@@ -15,6 +15,6 @@ BEGIN
 
     SELECT P.NumFinca AS [# Propiedad],P.Valor AS [Valor], P.Direccion AS [Direccion]
     FROM Propiedad P JOIN UsuarioVsPropiedad UVP ON P.id = UVP.idPropiedad
-    WHERE @idUser = UVP.idUsuario
+    WHERE @idUser = UVP.idUsuario AND UVP.activo = 1
 
 END

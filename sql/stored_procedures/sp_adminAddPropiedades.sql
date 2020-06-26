@@ -23,12 +23,13 @@ BEGIN
 		INSERT Propiedad (
 			NumFinca,
 			Valor,
-			Direccion
+			Direccion,
+			activo
 			)
 		SELECT @inputNumFinca,
 			@inputValorFinca,
-			@inputDir
-
+			@inputDir,
+			1
 		COMMIT
 
 		RETURN 1

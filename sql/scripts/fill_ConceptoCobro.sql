@@ -50,14 +50,14 @@ INSERT dbo.CC_ConsumoAgua (
 	activo
 	)
 SELECT id,
-	ConsumoM3,
+	ValorM3,
 	1
 FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 		id INT,
 		ValorM3 MONEY,
 		TipoCC NVARCHAR(10)
 		) AS X
-WHERE X.TipoCC = "CC Consumo"
+WHERE X.TipoCC = 'CC Consumo'
 
 INSERT dbo.CC_Porcentaje (
 	id,
@@ -71,7 +71,7 @@ FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 		ValorPorcentaje FLOAT,
 		TipoCC NVARCHAR(13)
 		) AS X
-WHERE X.TipoCC = "CC Porcentaje"
+WHERE X.TipoCC = 'CC Porcentaje'
 
 INSERT dbo.CC_Fijo (
 	id,
@@ -86,7 +86,7 @@ FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 	Monto MONEY,
 	TipoCC NVARCHAR(7)
 	) AS X
-WHERE X.TipoCC = "CC Fijo"
+WHERE X.TipoCC = 'CC Fijo'
 
 SELECT *
 FROM ConceptoCobro

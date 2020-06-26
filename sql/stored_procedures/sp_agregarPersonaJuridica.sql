@@ -78,13 +78,15 @@ BEGIN
 			idTipoDocID,
 			representante,
 			RepDocID,
-			TipoDocIdRepresentante
+			TipoDocIdRepresentante,
+			activo
 			)
 		SELECT P.id,
 			tpj.TipDocIdPJ,
 			tpj.Nombre,
 			tpj.DocidRepresentante,
-			tpj.TipDocIdRepresentante
+			tpj.TipDocIdRepresentante,
+			1
 		FROM @tmpPersonaJuridica AS tpj
 		JOIN Propietario P ON P.valorDocID = tpj.docidPersonaJuridica
 

@@ -13,6 +13,7 @@ BEGIN
 			FROM Usuario U
 			WHERE @usernameInput = U.username
 				AND @passwordInput = U.passwd
+				AND U.activo = 1
 			);
 
 	IF @isAdmin = 1

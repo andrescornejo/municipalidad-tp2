@@ -68,11 +68,13 @@ BEGIN
 		INSERT dbo.Propiedad (
 			NumFinca,
 			Valor,
-			Direccion
+			Direccion,
+			activo
 			)
 		SELECT tp.NumFinca,
 			tp.Valor,
-			tp.Direccion
+			tp.Direccion,
+			1
 		FROM @tmpProp tp
 
 		COMMIT
