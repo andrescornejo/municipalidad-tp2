@@ -18,11 +18,13 @@ EXEC sp_xml_preparedocument @hdoc OUT,
 INSERT dbo.Usuario (
 	username,
 	passwd,
-	isAdmin
+	isAdmin,
+	activo
 	)
 SELECT username,
 	passwd,
-	tipoUsuario
+	tipoUsuario,
+	1
 FROM openxml(@hdoc, '/Administrador/UsuarioAdmi', 1) WITH (
 		username NVARCHAR(50),
 		passwd NVARCHAR(MAX),

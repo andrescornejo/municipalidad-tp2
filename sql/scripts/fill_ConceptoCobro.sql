@@ -11,7 +11,7 @@ SET IDENTITY_INSERT ConceptoCobro ON
 DECLARE @ConceptoCobroXML XML;
 
 SELECT @ConceptoCobroXML = C
-FROM openrowset(BULK 'C:\xml\concepto_cobro.xml', single_blob) AS ConceptoCobro(C)
+FROM openrowset(BULK 'C:\xml\ConceptoCobro.xml', single_blob) AS ConceptoCobro(C)
 
 EXEC sp_xml_preparedocument @hdoc OUT,
 	@ConceptoCobroXML
