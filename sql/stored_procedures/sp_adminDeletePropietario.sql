@@ -1,6 +1,6 @@
 /*
  * Stored Procedure: csp_adminDeletePropietario
- * Description: 
+ * Description: Borrado logico de Objeto Propietario
  * Author: Andres Cornejo
  */
 USE municipalidad
@@ -23,16 +23,16 @@ BEGIN
 
 		BEGIN TRANSACTION
 
-		DELETE
-		FROM PropietarioJuridico
+		update PropietarioJuridico
+		set activo = 0
 		WHERE id = @idPropietario
 
-		DELETE
-		FROM PropiedadDelPropietario
+		update PropiedadDelPropietario
+		set activo = 0
 		WHERE idPropietario = @idPropietario
 
-		DELETE
-		FROM Propietario
+		update Propietario
+		set activo = 0
 		WHERE id = @idPropietario
 
 		COMMIT

@@ -1,6 +1,6 @@
 /*
- * Stored Procedure: csp_adminUpdateUsuario
- * Description: 
+ * Stored Procedure: csp_adminDeletePropiedad
+ * Description: Borrado logico de Objeto Entidad.
  * Author: Andres Cornejo
  */
 USE municipalidad
@@ -23,29 +23,33 @@ BEGIN
 
 		BEGIN TRANSACTION
 
-		DELETE
-		FROM ComprobanteDePago
-		WHERE idPropiedad = @idPropiedad
-
-		DELETE
-		FROM Recibo
-		WHERE idPropiedad = @idPropiedad
-
-		DELETE
-		FROM PropiedadDelPropietario
-		WHERE idPropiedad = @idPropiedad
-
-		DELETE
-		FROM UsuarioVsPropiedad
-		WHERE idPropiedad = @idPropiedad
-
-		DELETE
-		FROM CCenPropiedad
-		WHERE idPropiedad = @idPropiedad
-
-		DELETE
-		FROM Propiedad
+		UPDATE Propiedad
+		SET activo = 0
 		WHERE id = @idPropiedad
+
+		UPDATE Reconteca
+		SET activo = 0
+		WHERE idPropiedad = @idPropiedad
+
+		UPDATE Recibo
+		SET activo = 0
+		WHERE idPropiedad = @idPropiedad
+
+		UPDATE PropiedadDelPropietario
+		SET activo = 0
+		WHERE idPropiedad = @idPropiedad
+
+		UPDATE UsuarioVsPropiedad
+		SET activo = 0
+		WHERE idPropiedad = @idPropiedad
+
+		UPDATE CCenPropiedad
+		SET activo = 0
+		WHERE idPropiedad = @idPropiedad
+
+		UPDATE TransaccionConsumo
+		SET activo = 0
+		WHERE idPropiedad = @idPropiedad
 
 		COMMIT
 

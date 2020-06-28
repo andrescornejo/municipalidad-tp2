@@ -1,6 +1,6 @@
 /*
  * Stored Procedure: csp_getUserIDFromUsername
- * Description: 
+ * Description: Retorna el id de un usuario, a partir de su nombre de usuario.
  * Author: Andres Cornejo
  */
 USE municipalidad
