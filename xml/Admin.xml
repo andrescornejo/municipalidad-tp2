@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<Administrador>
-	<UsuarioAdmi username="cornejo" passwd="1234" tipoUsuario="true"/>
-	<UsuarioAdmi username="Jquiros" passwd="123hola" tipoUsuario="false"/>
-	<UsuarioAdmi username="Jperez" passwd="123mama" tipoUsuario="true"/>	
-	<UsuarioAdmi username="Kipanda" passwd="1211pez" tipoUsuario="false"/>
-</Administrador>
