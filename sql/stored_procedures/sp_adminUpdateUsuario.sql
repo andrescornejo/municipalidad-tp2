@@ -1,6 +1,6 @@
 /*
  * Stored Procedure: csp_adminUpdateUsuario
- * Description: 
+ * Description: Actualizacion de un Usuario por un Admin.
  * Author: Andres Cornejo
  */
 USE municipalidad
@@ -31,6 +31,7 @@ BEGIN
 			passwd = @inputNewPassword,
 			isAdmin = @inputAdminStatus
 		WHERE id = @idUser
+			AND activo = 1
 
 		COMMIT
 

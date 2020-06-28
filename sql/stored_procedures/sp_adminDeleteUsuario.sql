@@ -1,3 +1,8 @@
+/*
+ * Stored Procedure: csp_adminAddUser
+ * Description: Borrado logico de objeto usuario.
+ * Author: Andres Cornejo
+ */
 USE municipalidad
 GO
 
@@ -18,12 +23,12 @@ BEGIN
 
 		BEGIN TRANSACTION
 
-		DELETE
-		FROM UsuarioVsPropiedad
+		UPDATE UsuarioVsPropiedad
+		SET activo = 0
 		WHERE idUsuario = @idUsuario
 
-		DELETE
-		FROM Usuario
+		UPDATE Usuario
+		SET activo = 0
 		WHERE id = @idUsuario
 
 		COMMIT

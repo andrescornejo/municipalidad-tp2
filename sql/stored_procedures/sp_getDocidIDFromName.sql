@@ -1,6 +1,6 @@
 /*
  * Stored Procedure: csp_getDocidIDFromName
- * Description: 
+ * Description: Retorna el id del la tabla tipoDocID, a partir del nombre.
  * Author: Andres Cornejo
  */
 USE municipalidad

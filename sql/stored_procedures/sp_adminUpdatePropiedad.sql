@@ -1,20 +1,44 @@
 /*
  * Stored Procedure: csp_adminUpdatePropiedad
- * Description: 
+ * Description: Actualizacion a una Propiedad por un Admin.
  * Author: Andres Cornejo
  */
+USE municipalidad
+GO
 
-use municipalidad
-go
+CREATE
+	OR
 
-create or alter proc csp_adminUpdatePropiedad @numFinca int as
-begin
-	begin try
-		set nocount on
-	--sp code here
+ALTER PROC csp_adminUpdatePropiedad @numFinca INT,
+	@newNumFinca INT,
+	@newValue MONEY,
+	@newDir NVARCHAR(max)
+AS
+BEGIN
+	BEGIN TRY
+		SET NOCOUNT ON
 
-	end try
-	begin catch
+		DECLARE @idPropiedad INT
+
+		EXEC @idPropiedad = csp_getPropiedadIDFromNumFinca @numFinca
+
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+
+		BEGIN TRAN
+
+		UPDATE Propiedad
+		SET NumFinca = @newNumFinca,
+			Valor = @newValue,
+			Direccion = @newDir
+		WHERE id = @idPropiedad
+			AND activo = 1
+
+		COMMIT
+
+		RETURN 1
+	END TRY
+
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK
 
@@ -25,7 +49,8 @@ begin
 		PRINT ('ERROR:' + @errorMsg)
 
 		RETURN - 1 * @@ERROR
-	end catch
-end
+	END CATCH
+END
+GO
 
-go
+

@@ -1,6 +1,6 @@
 /*
  * Stored Procedure: csp_adminUpdatePropietario
- * Description: 
+ * Description: Actualizacion de informacion a Propietario por parte de un Admin.
  * Author: Andres Cornejo
  */
 USE municipalidad
@@ -34,7 +34,7 @@ BEGIN
 		SET nombre = @inputName,
 			valorDocID = @inputDocIDVal,
 			idTipoDocID = @DocidID
-		WHERE valorDocID = @inputOLDDocID
+		WHERE valorDocID = @inputOLDDocID and activo = 1
 
 		COMMIT
 
