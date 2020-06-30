@@ -10,27 +10,33 @@ DECLARE @hdoc INT;
 DECLARE @UsuarioXML XML;
 
 SELECT @UsuarioXML = U
-FROM openrowset(BULK 'C:\xml\Admin.xml', single_blob) AS Usuario(U)
+FROM openrowset(BULK 'C:\xml\Usuarios.xml', single_blob) AS Usuario(U)
 
 EXEC sp_xml_preparedocument @hdoc OUT,
 	@UsuarioXML
 
+SELECT @UsuarioXML
 INSERT dbo.Usuario (
 	username,
 	passwd,
 	isAdmin,
 	activo
 	)
-SELECT username,
-	passwd,
-	tipoUsuario,
-	1
-FROM openxml(@hdoc, '/Administrador/UsuarioAdmi', 1) WITH (
-		username NVARCHAR(50),
-		passwd NVARCHAR(MAX),
-		tipoUsuario BIT
-		)
+SELECT 
+	X.username,
+	X.password,
+	IsAdmin = 	(case when (X.tipo = 'admin') 
+					then 1
+					else 0
+				end),
 
+	1
+FROM openxml(@hdoc, '/Usuarios/Usuario', 1) 
+	WITH (
+		username NVARCHAR(50),
+		password NVARCHAR(MAX),
+		tipo NVARCHAR(20)
+	) X
 SELECT *
 FROM Usuario
 
