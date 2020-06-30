@@ -17,7 +17,7 @@ namespace Muni.Pages
         }
         protected void logoutBtn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("MainPage.aspx");
+            Response.Redirect("../MainPage.aspx");
         }
 
         protected void addUsuarioBtn_Click(object sender, EventArgs e)
