@@ -29,7 +29,7 @@ namespace Muni
                 case 0:
                     throw new NotImplementedException("No se ha implementado el cliente");
                 case 1:
-                    Response.Redirect("AdminPage.aspx?username="+usernameGot);
+                    Response.Redirect("Admin/AdminPage.aspx?username="+usernameGot);
                     break;
                 default:
                     MessageBox.Show("Failed to log in.");
