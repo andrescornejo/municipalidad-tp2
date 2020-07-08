@@ -11,8 +11,47 @@ create or alter proc csp_generarReciboRecBasura @inFecha DATE
 as
 begin
 	begin try
-		set nocount on
-	--sp code here
+		DECLARE @idCCBasura INT
+		
+		set nocount on        
+		SELECT @DiaCobro = (SELECT C.DiaEmisionRecibo 
+                            FROM [dbo].[ConceptoCobro] C 
+                            WHERE C.nombre = 'Recolectar Basura')
+
+        IF @DiaCobro != (SELECT EXTRACT (DAY FROM @inFecha))
+        BEGIN
+            RETURN
+        END
+
+		DECLARE @tmpPropiedadesCC_Licores TABLE(
+            idPropiedad INT
+        )
+
+		SET @idCCBasura = (SELECT C.id FROM [dbo].[ConceptoCobro] C WHERE C.nombre = 'Recolectar Basura')
+	
+		INSERT INTO @tmpPropiedadesCC_Licores (idPropiedad)
+        SELECT CP.idPropiedad FROM [dbo].[CCenPropiedad] CP WHERE CP.idConceptoCobro = @idCCBasura
+
+        INSERT INTO [dbo].[Recibo](
+            idPropiedad,
+            idConceptoCobro, 
+            fecha, 
+            fechaVencimiento, 
+            monto,
+            esPediente,
+            Activo
+        )
+		SELECT
+			tmp.idPropiedad,
+			@idCCBasura,
+			@inFecha,
+			DATEADD(DAY,CC.QDiasVecimiento, inFecha),
+			CF.Monto,
+			1,
+			1
+		FROM tmpPropiedadesCC_Licores tmp
+		INNER JOIN [dbo].[ConceptoCobro] CC ON @idCCBasura = CC.id
+		INNER JOIN [dbo].[CC_Fijo] CF ON @idCCBasura = CF.id
 
 	end try
 	begin catch
