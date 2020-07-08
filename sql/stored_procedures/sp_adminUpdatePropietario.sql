@@ -12,13 +12,17 @@ CREATE
 ALTER PROC csp_adminUpdatePropietario @inputOLDDocID NVARCHAR(50),
 	@inputName NVARCHAR(50),
 	@inputDocIDVal NVARCHAR(100),
-	@inputDocID NVARCHAR(50)
+	@inputDocID NVARCHAR(50),
+	@inputInsertedBy NVARCHAR(100),
+	@inputInsertedIn NVARCHAR(20)
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
 		DECLARE @idPropietario INT
+		DECLARE @jsonAntes NVARCHAR(500)
+		DECLARE @jsonDespues NVARCHAR(500)
 
 		EXEC @idPropietario = csp_getPropietarioIDFromDocID @inputOLDDocID
 
@@ -28,6 +32,16 @@ BEGIN
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 
+		SET @jsonAntes = (SELECT 
+						P.Nombre, 
+						T.nombre, 
+						P.valorDocID, 
+						P.activo
+					FROM [dbo].[Propietario] P
+					INNER JOIN [dbo].[TipoDocID] T ON P.idTipoDocID = T.id
+					WHERE P.id = @idPropietario 
+					FOR JSON PATH)
+
 		BEGIN TRANSACTION
 
 		UPDATE Propietario
@@ -36,6 +50,38 @@ BEGIN
 			idTipoDocID = @DocidID
 		WHERE valorDocID = @inputOLDDocID and activo = 1
 
+		
+
+		-- insert change into bitacora
+
+		SET @jsonDespues = (SELECT 
+								P.Nombre, 
+								T.nombre, 
+								P.valorDocID, 
+								P.activo
+							FROM [dbo].[Propietario] P
+							INNER JOIN [dbo].[TipoDocID] T ON P.idTipoDocID = T.id
+							WHERE P.id = @idPropietario
+							FOR JSON PATH)
+
+		INSERT INTO [dbo].[Bitacora] (
+			idTipoEntidad,
+			idEntidad,
+			jsonAntes, 
+			jsonDespues,
+			insertedAt,
+			insertedBy,
+			insertedIn
+		) SELECT
+			T.id,
+			@idPropietario,
+			@jsonAntes,
+			@jsonDespues,
+			GETDATE(),
+			@inputInsertBy,
+			@inputInsertIn
+		FROM [dbo].[TipoEntidad] T
+		WHERE T.Nombre = 'Propietario'
 		COMMIT
 
 		RETURN 1

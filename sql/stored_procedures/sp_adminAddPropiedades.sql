@@ -2,6 +2,7 @@
  * Stored Procedure: csp_adminAddPropiedades
  * Description: 
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO
@@ -24,12 +25,16 @@ BEGIN
 			NumFinca,
 			Valor,
 			Direccion,
-			activo
+			activo,
+			ConsumoAcumuladoM3,
+			UltimoConsumoM3
 			)
 		SELECT @inputNumFinca,
 			@inputValorFinca,
 			@inputDir,
-			1
+			1,
+			0,
+			0
 		COMMIT
 
 		RETURN 1
