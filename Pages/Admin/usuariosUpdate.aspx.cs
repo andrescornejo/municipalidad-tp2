@@ -14,7 +14,7 @@ namespace Muni.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
             usernameGot = Request.QueryString["username"];
-            this.gridView.DataSource = God.getUsuarios();
+            this.gridView.DataSource = Globals.getUsuarios();
             this.gridView.DataBind();
         }
         protected void backBtn_Click(object sender, EventArgs e)
@@ -31,11 +31,11 @@ namespace Muni.Pages
 
             if (OLDUsername.Length != 0 && NEWUsername.Length != 0 && NEWPassword.Length != 0)
             {
-                God.updateUsuario(OLDUsername, NEWUsername, NEWPassword, isAdmin);
+                Globals.updateUsuario(OLDUsername, NEWUsername, NEWPassword, isAdmin);
                 this.textBoxOLDUsername.Text = "";
                 this.textBoxNewName.Text = "";
                 this.textBoxNewPassword.Text = "";
-                this.gridView.DataSource = God.getUsuarios();
+                this.gridView.DataSource = Globals.getUsuarios();
                 this.gridView.DataBind();
                 MessageBox.Show("Usuario actualizado: " + NEWUsername);
             }

@@ -5,11 +5,33 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.Web.UI.WebControls;
 
 namespace Muni.Classes
 {
-    public static class God
+    public static class Globals
     {
+        //Login info will be stored here. Not really safe, but safety doesn't matter in this case.
+        private static string cURRENTUSER;
+        private static bool iSADMIN;
+
+        public static string CURRENTUSER { get => cURRENTUSER; set => cURRENTUSER = value; }
+        public static bool ISADMIN { get => iSADMIN; set => iSADMIN = value; }
+
+        public static void setUser(string username, bool isAdmin)
+        {
+            CURRENTUSER = username;
+            ISADMIN = isAdmin;
+        }
+
+        public static void logoutUser()
+        {
+            CURRENTUSER = "";
+            ISADMIN = false;
+        }
+
+        //The connection string is stored here.
+
         public static string CONNECTIONSTRING = Properties.Resources.CONNECTIONSTRING;
 
         public static SqlConnection getConnection()

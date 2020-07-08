@@ -14,7 +14,7 @@ namespace Muni.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
             usernameGot = Request.QueryString["username"];
-            this.gridView.DataSource = God.getUsuarios();
+            this.gridView.DataSource = Globals.getUsuarios();
             this.gridView.DataBind();
         }
         protected void backBtn_Click(object sender, EventArgs e)
@@ -27,9 +27,9 @@ namespace Muni.Pages
             string docID = textBoxUsername.Text;
             if (docID.Length != 0)
             {
-                God.deletePropietario(docID);
+                Globals.deletePropietario(docID);
                 this.textBoxUsername.Text = "";
-                this.gridView.DataSource = God.getUsuarios();
+                this.gridView.DataSource = Globals.getUsuarios();
                 this.gridView.DataBind();
                 MessageBox.Show("Usuario borrado");
             }

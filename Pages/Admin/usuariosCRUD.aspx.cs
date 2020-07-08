@@ -14,7 +14,7 @@ namespace Muni.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
             usernameGot = Request.QueryString["username"];
-            this.gridView.DataSource = God.getUsernames();
+            this.gridView.DataSource = Globals.getUsernames();
             this.gridView.DataBind();
         }
         protected void backBtn_Click(object sender, EventArgs e)

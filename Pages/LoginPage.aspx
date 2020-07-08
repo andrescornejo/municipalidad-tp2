@@ -1,27 +1,39 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="LoginPage.aspx.cs" Inherits="Muni.MainPage" %>
 
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head runat="server">
     <title>Login</title>
+    <%-- add bootstrap --%>
+    <link href="../Content/bootstrap.css" rel="stylesheet" />
+    <link href="../Content/login-page.css" rel="stylesheet" />
 </head>
-<body style="background-color:#2c3d63">
-    <form id="MainForm" runat="server">
-        <div style="text-align:center">
-            <asp:Label ID="muniLbl" runat="server" Font-Names="Bahnschrift" Font-Size="150px" ForeColor="White" Text="Municipalidad"></asp:Label>       
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <div class="card card-signin my-5">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Municipalidad - Login</h5>
+                        <form id="loginForm" runat="server">
+                            <div class="form-label-group">
+                                <asp:TextBox ID="usernameTb" runat="server" CssClass="form-control"></asp:TextBox>
+                                <label for="inputEmail">Nombre de usuario</label>
+                            </div>
+                            <div class="form-label-group">
+                                <asp:TextBox ID="passwordTb" runat="server" CssClass="form-control" TextMode="Password"></asp:TextBox>
+                                <label for="inputPassword">Contraseña</label>
+                          </div>
+                            <asp:Button ID="loginBtn" runat="server" Text="Login" OnClick="loginBtn_Click" CssClass="btn btn-lg btn-primary btn-block text-uppercase" type="submit"/>
+                            <hr class="my-4"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div style="text-align:center;margin-top:20px">
-            <asp:Label ID="usernameLbl" runat="server" Text="Username" Font-Names="Bahnschrift" ForeColor="White" style="margin-top:10px" Font-Size="30px"></asp:Label>
-            <br/>
-            <asp:TextBox ID="usernameTb" runat="server" style="margin-top:10px;margin-bottom:10px" Font-Names="Bahnschrift" Width="200px" Font-Size="20px"></asp:TextBox>
-            <br />
-            <asp:Label ID="passwordLbl" runat="server" Text="Password" Font-Names="Bahnschrift" ForeColor="White" style="margin-top:10px" Font-Size="30px"></asp:Label>
-            <br />
-            <asp:TextBox ID="passwordTb" runat="server" style="margin-top:10px;margin-bottom:10px" Font-Names="Bahnschrift" Width="200px" Font-Size="20px" TextMode="Password"></asp:TextBox>
-            <br />
-            <asp:Button ID="loginBtn" runat="server" Text="Login" Width="200px" BorderWidth="0px" Font-Bold="True" Font-Names="Bahnschrift" Font-Size="40px" ForeColor="White" style="margin-top:30px ;background-color:#ff6f5e" OnClick="loginBtn_Click"/>
-        </div>
-    </form>
+    </div>
+    <%-- add jquery --%>
+    <script src="../Scripts/jquery-3.5.1.min.js"></script>
 </body>
 </html>

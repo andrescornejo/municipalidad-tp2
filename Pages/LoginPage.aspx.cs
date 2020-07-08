@@ -14,6 +14,7 @@ namespace Muni
     {
         protected void loginBtn_Click(object sender, EventArgs e)
         {
+            LoginUser currentUser = LoginUser.getInstance(); // HERE
             string usernameGot, passwordGot;
 
             usernameGot = this.usernameTb.Text;
@@ -23,13 +24,15 @@ namespace Muni
                 MessageBox.Show("Username or password can't be empty.");
             }
             //Invoke SP to check if user is admin or not.
-
-            switch (God.login(usernameGot, passwordGot))
+            
+            switch (Globals.login(usernameGot, passwordGot))
             {
                 case 0:
+                    Globals.setUser(usernameGot, false);
                     throw new NotImplementedException("No se ha implementado el cliente");
                 case 1:
-                    Response.Redirect("Admin/AdminPage.aspx?username="+usernameGot);
+                    Globals.setUser(usernameGot, true);
+                    Response.Redirect("Admin/AdminPage.aspx");
                     break;
                 default:
                     MessageBox.Show("Failed to log in.");

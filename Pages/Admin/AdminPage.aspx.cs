@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Muni.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -12,11 +13,12 @@ namespace Muni.Pages
         
         protected void Page_Load(object sender, EventArgs e)
         {
-            string usernameGot = Request.QueryString["username"]; ;
+            string usernameGot = Globals.CURRENTUSER;
             this.Title = this.userLbl.Text = usernameGot;
         }
         protected void logoutBtn_Click(object sender, EventArgs e)
         {
+            Globals.logoutUser();
             Response.Redirect("../LoginPage.aspx");
         }
 

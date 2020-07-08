@@ -14,7 +14,7 @@ namespace Muni.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
             usernameGot = Request.QueryString["username"];
-            this.gridView.DataSource = God.getUsernames();
+            this.gridView.DataSource = Globals.getUsernames();
             this.gridView.DataBind();
         }
         protected void backBtn_Click(object sender, EventArgs e)
@@ -29,11 +29,11 @@ namespace Muni.Pages
 
             if (newUser.Length != 0 && newPasswd.Length != 0)
             {
-                God.addUser(newUser, newPasswd, this.isAdminCheckbox.Checked);
+                Globals.addUser(newUser, newPasswd, this.isAdminCheckbox.Checked);
                 this.usernameTxtBox.Text = "";
                 this.passwdTxtBox.Text = "";
                 this.isAdminCheckbox.Checked = false;
-                this.gridView.DataSource = God.getUsernames();
+                this.gridView.DataSource = Globals.getUsernames();
                 this.gridView.DataBind();
                 MessageBox.Show("Usuario agregado: " + newUser);
             }
