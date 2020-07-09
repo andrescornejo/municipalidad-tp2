@@ -26,24 +26,20 @@ BEGIN
 		DECLARE @Admin INT
 
 		EXEC @idUser = csp_getUserIDFromUsername @inputOLDUsername
-
-		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		
-		SET @Admin = (CASE 
-						WHEN @inputBit = 1
+		SET @idEntidad = (SELECT U.id FROM [dbo].[Usuario] U WHERE U.username = @inputUsername)
+		SET @Admin = (CASE WHEN @inputBit = 1
 						THEN 'Administrador'
 						ELSE 'Cliente'
 					END)
-
-		SET @jsonAntes = (SELECT 
-							U.username,
-							'*********',
-							@Admin,
-							U.activo
-						FROM [dbo].[Usuario] U
-						WHERE U.id = idUser
-						FOR JSON PATH)
-
+		SET @jsonAntes = (SELECT
+							@idEntidad AS 'ID',
+							@inputUsername AS 'Nombre Usuario', 
+							'*******' AS 'Contrasenna', 
+							@Admin AS 'Tipo Usuario', 
+							'Activo' AS 'Estado'
+						FOR JSON PATH, ROOT('Usuario'))
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION
 
 		UPDATE Usuario
@@ -55,16 +51,14 @@ BEGIN
 
 		-- inset into bitacora
 
-		SET @jsonDespues = (SELECT 
-							U.username,
-							'*********',
-							@Admin,
-							U.activo
-						FROM [dbo].[Usuario] U
-						WHERE U.id = idUser
-						FOR JSON PATH)
-
-		
+		SET @jsonDespues = (SELECT
+								@idEntidad AS 'ID',
+								@inputUsername AS 'Nombre Usuario', 
+								'*******' AS 'Contrasenna', 
+								@Admin AS 'Tipo Usuario', 
+								'Activo' AS 'Estado'
+							FOR JSON PATH, ROOT('Usuario'))
+ 
 		INSERT INTO [dbo].[Bitacora] (
 			idTipoEntidad,
 			idEntidad,
@@ -82,6 +76,7 @@ BEGIN
 			@inputInsertBy,
 			@inputInsertIn
 		FROM [dbo].[TipoEntidad] T
+		JOIN [dbo].[Usuario] U ON @inputUsername = U.username AND U.activo = 1 
 		WHERE T.Nombre = 'Usuario'
 		
 		COMMIT

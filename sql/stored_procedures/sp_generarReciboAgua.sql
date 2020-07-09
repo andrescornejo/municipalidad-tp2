@@ -54,29 +54,31 @@ begin
         
         WHILE (SELECT COUNT(*) FROM tmpPropiedadesCC_Agua) > 0
         BEGIN
+            -- Tomamos la primera propiedad
             SELECT TOP 1 @idPropiedad = tmp.idPropiedad FROM tmpPropiedadesCC_Agua tmp
-            
+            -- Luego la eliminamos de la tabla
+            DELETE tmpPropiedadesCC_Agua WHERE idPropiedad = @idPropiedad 
+            -- obtenemos el consumo
             SET @ConsumoM3 = (SELECT P.ConsumoAcumuladoM3 FROM [dbo].[Propiedad] P WHERE P.id = @idPropiedad)
-
+            -- el consumo hasta el ultimo recibo generado
             SET @UltimoConsumoM3 = (SELECT P.UltimoConsumoM3 FROM [dbo].[Propiedad] P WHERE P.id = @idPropiedad)
-
+            -- calculamos el monto cosumido en el ultimo mes
             SET @Monto =
                 CASE WHEN (@ConsumoM3 - @UltimoConsumoM3) * @ValorM3 > @MontoMinimo
                     THEN (@ConsumoM3 - @UltimoConsumoM3) * @ValorM3
                     ELSE @MontoMinimo
-                END   
+                END
+            -- Creamos el recibo temporal 
             INSERT INTO tmpRecibos (idPropiedad, idCCAgua, Fecha, FechaVencimiento, Monto)
-            SELECT @idPropiedad, @idCCAgua, @inFecha, DATEADD(DAY, @QDias, @inFecha,@Monto)  
-            FROM tmpPropiedadesCC_Agua tmpP
-
-            DELETE TOP (1) FROM tmpPropiedadesCC_Agua
+            SELECT @idPropiedad, @idCCAgua, @inFecha, DATEADD(DAY, @QDias, @inFecha),@Monto  
         END
 
+        -- Agreamos otra vez las propiedades 
         INSERT INTO @tmpPropiedadesCC_Agua (idPropiedad)
         SELECT CP.idPropiedad FROM [dbo].[CCenPropiedad] CP WHERE CP.idConceptoCobro = @idCCAgua
         
         SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-
+        
         BEGIN TRANSACTION
             INSERT INTO [dbo].[Recibo](
                 idPropiedad,
@@ -87,8 +89,15 @@ begin
                 esPediente,
                 Activo
             )
-            SELECT tmp.*, 1,1
-            FROM tmpRecibos tmp
+            SELECT 
+                tmpR.idPropiedad,
+                tmpR.idConceptoCobro,
+                tmpR.Fecha,
+                tmpR.FechaVencimiento,
+                tmpR.Monto,
+                1,
+                1
+            FROM tmpRecibos tmpR
 
             WHILE (SELECT COUNT(*) FROM tmpPropiedadesCC_Agua) > 0
             BEGIN

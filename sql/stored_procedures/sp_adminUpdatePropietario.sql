@@ -29,19 +29,19 @@ BEGIN
 		DECLARE @DocidID INT
 
 		EXEC @DocidID = csp_getDocidIDFromName @inputDocID
+		
+		SET @jsonAntes = (SELECT 
+							P.id AS 'ID', 
+							@inputName AS 'Nombre', 
+							@T.nombre AS 'Tipo DocID' , 
+							@inputDocIDVal AS 'Valor ID', 
+							'Activo' AS 'Estado'
+							FROM [dbo].[Propietario] P
+							JOIN [dbo].[idTipoDocID] T ON T.id = @DocidID
+							WHERE P.valorDocID = @inputDocIDVal
+							FOR JSON PATH, ROOT('Propietario'))
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-
-		SET @jsonAntes = (SELECT 
-						P.Nombre, 
-						T.nombre, 
-						P.valorDocID, 
-						P.activo
-					FROM [dbo].[Propietario] P
-					INNER JOIN [dbo].[TipoDocID] T ON P.idTipoDocID = T.id
-					WHERE P.id = @idPropietario 
-					FOR JSON PATH)
-
 		BEGIN TRANSACTION
 
 		UPDATE Propietario
@@ -50,19 +50,17 @@ BEGIN
 			idTipoDocID = @DocidID
 		WHERE valorDocID = @inputOLDDocID and activo = 1
 
-		
-
 		-- insert change into bitacora
-
 		SET @jsonDespues = (SELECT 
-								P.Nombre, 
-								T.nombre, 
-								P.valorDocID, 
-								P.activo
+								P.id AS 'ID', 
+								@inputName AS 'Nombre', 
+								@T.nombre AS 'Tipo DocID' , 
+								@inputDocIDVal AS 'Valor ID', 
+								'Activo' AS 'Estado'
 							FROM [dbo].[Propietario] P
-							INNER JOIN [dbo].[TipoDocID] T ON P.idTipoDocID = T.id
-							WHERE P.id = @idPropietario
-							FOR JSON PATH)
+							JOIN [dbo].[idTipoDocID] T ON T.id = @DocidID
+							WHERE P.valorDocID = @inputDocIDVal
+							FOR JSON PATH, ROOT('Propietario'))
 
 		INSERT INTO [dbo].[Bitacora] (
 			idTipoEntidad,
@@ -81,6 +79,7 @@ BEGIN
 			@inputInsertBy,
 			@inputInsertIn
 		FROM [dbo].[TipoEntidad] T
+		JOIN [dbo].[Propietario] P ON P.valorDocID = @inputDocIDVal and activo = 1
 		WHERE T.Nombre = 'Propietario'
 		COMMIT
 

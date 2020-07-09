@@ -46,9 +46,16 @@ BEGIN
 		-- insert change into bitácora table
 		SET @idEntidad = (SELECT P.id FROM [dbo].[Propietario] P WHERE P.valorDocID = inputDocIDVal)
 
-		SET @jsonDespues = (SELECT P.id, @inputName, @DocidID, @inputDocIDVal, P.activo 
+		SET @jsonDespues = (SELECT 
+								P.id AS 'ID', 
+								@inputName AS 'Nombre', 
+								@T.nombre AS 'Tipo DocID' , 
+								@inputDocIDVal AS 'Valor ID', 
+								'Activo' AS 'Estado'
 							FROM [dbo].[Propietario] P
-							WHERE P.valorDocID = @inputDocIDVal)
+							JOIN [dbo].[idTipoDocID] T ON T.id = @DocidID
+							WHERE P.valorDocID = @inputDocIDVal
+							FOR JSON PATH,ROOT('Propietario'))
 
 		INSERT INTO [dbo].[Bitacora] (
 			idTipoEntidad,

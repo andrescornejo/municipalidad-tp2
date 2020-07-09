@@ -41,12 +41,17 @@ BEGIN
 
 		-- save change of the table into bitácora
 		SET @idEntidad = (SELECT U.id FROM [dbo].[Usuario] U WHERE U.username = @inputUsername)
-		SET @Admin = (CASE 
-						WHEN @inputBit = 1
+		SET @Admin = (CASE WHEN @inputBit = 1
 						THEN 'Administrador'
 						ELSE 'Cliente'
 					END)
-		SET @jsonDespues = (SELECT @inputUsername, '*******', @Admin, inputBit)
+		SET @jsonDespues = (SELECT
+							@idEntidad AS 'ID',
+							@inputUsername AS 'Nombre Usuario', 
+							'*******' AS 'Contrasenna', 
+							@Admin AS 'Tipo Usuario', 
+							'Activo' AS 'Estado'
+							FOR JSON PATH, ROOT('Usuario'))
 		
 		INSERT INTO [dbo].[Bitacora] (
 			idTipoEntidad,

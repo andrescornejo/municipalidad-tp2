@@ -1,5 +1,5 @@
 /*
- * Stored Procedure: 
+ * Stored Procedure: csp_generarReciboCCFijo
  * Description: 
  * Author: Pablo Alpizar
  */
@@ -7,30 +7,28 @@
 use municipalidad
 go
 
-create or alter proc csp_generarReciboPatenteLicores @inFecha DATE 
+create or alter proc csp_generarReciboCCFijo @inFecha DATE, 
+@inIdCC INT
 as
 begin
 	begin try
-		DECLARE @idCCLicores INT
-		
 		set nocount on        
 		SELECT @DiaCobro = (SELECT C.DiaEmisionRecibo 
                             FROM [dbo].[ConceptoCobro] C 
-                            WHERE C.nombre = 'Patente Licores')
+                            WHERE C.id = @inIdCC)
 
         IF @DiaCobro != (SELECT EXTRACT (DAY FROM @inFecha))
         BEGIN
             RETURN
         END
 
-		DECLARE @tmpPropiedadesCC_Licores TABLE(
+		DECLARE @tmpPropiedadesTipoCC TABLE(
             idPropiedad INT
         )
-
-		SET @idCCLicores = (SELECT C.id FROM [dbo].[ConceptoCobro] C WHERE C.nombre = 'Patente Licores')
 	
-		INSERT INTO @tmpPropiedadesCC_Licores (idPropiedad)
-        SELECT CP.idPropiedad FROM [dbo].[CCenPropiedad] CP WHERE CP.idConceptoCobro = @idCCLicores
+		INSERT INTO @tmpPropiedadesTipoCC (idPropiedad)
+        SELECT CP.idPropiedad FROM [dbo].[CCenPropiedad] CP 
+		WHERE CP.idConceptoCobro = @inIdCC
 
         INSERT INTO [dbo].[Recibo](
             idPropiedad,
@@ -43,16 +41,16 @@ begin
         )
 		SELECT
 			tmp.idPropiedad,
-			@idCCLicores,
+			@inIdCC,
 			@inFecha,
 			DATEADD(DAY,CC.QDiasVecimiento, inFecha),
 			CF.Monto,
 			1,
 			1
-		FROM tmpPropiedadesCC_Licores tmp
-		INNER JOIN [dbo].[ConceptoCobro] CC ON @idCCLicores = CC.id
-		INNER JOIN [dbo].[CC_Fijo] CF ON @idCCLicores = CF.id
-
+		FROM tmpPropiedadesTipoCC tmp
+		INNER JOIN [dbo].[ConceptoCobro] CC ON @inIdCC = CC.id
+		INNER JOIN [dbo].[CC_Fijo] CF ON @inIdCC = CF.id
+		
 	end try
 	begin catch
 		IF @@TRANCOUNT > 0
