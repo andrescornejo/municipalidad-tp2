@@ -15,6 +15,8 @@ BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
+		DECLARE @UserRef NVARCHAR(100)
+		DECLARE @PropiedadRef INT
 		DECLARE @OperacionXML XML
 
 		SELECT @OperacionXML = O
@@ -63,6 +65,38 @@ BEGIN
 		JOIN Usuario U ON U.username = tmp.nombreUsuario
 		JOIN Propiedad P ON P.NumFinca = tmp.NumFinca
 
+		-- insert register into bitacora
+		WHILE (SELECT COUNT(*) FROM @tmpUSvsProp) > 0
+		BEGIN
+			SET @UserRef = (SELECT TOP 1 tmp.nombreUsuario FROM @tmpUSvsProp tmp)
+			SET @PropiedadRef = (SELECT TOP 1 tmp.NumFinca FROM @tmpUSvsProp tmp)
+			DELETE @tmpUSvsProp WHERE nombreUsuario = @UserRef AND NumFinca = @PropiedadRef
+
+			SET @idEntidad = (SELECT UP.id FROM [dbo].[UsuarioVsPropiedad] UP)
+
+			SET @jsonDespues = (SELECT 
+								@UserRef AS 'Nombre Usuario',
+								@PropiedadRef AS 'Numero Finca',
+								'activo' AS 'Estado'
+								FOR JSON PATH, ROOT('Propiedad-Usuario'))
+
+			INSERT INTO [dbo].[Bitacora] (
+				idTipoEntidad,
+				idEntidad, 
+				jsonDespues,
+				insertedAt,
+				insertedBy,
+				insertedIn
+			) SELECT
+				T.id,
+				@idEntidad,
+				@jsonDespues,
+				GETDATE(),
+				CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
+				'192.168.1.7'
+			FROM [dbo].[TipoEntidad] T
+			WHERE T.Nombre = 'PropiedadVsUsuario'		
+		END
 		COMMIT
 
 		RETURN 1

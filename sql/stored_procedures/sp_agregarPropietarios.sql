@@ -24,6 +24,9 @@ BEGIN
 		SET NOCOUNT ON
 
 		DECLARE @OperacionXML XML
+		DECLARE @jsonDepues NVARCHAR(500)
+		DECLARE @valorDocID INT
+		DECLARE @idEntidad INT
 
 		SELECT @OperacionXML = O
 		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
@@ -61,9 +64,8 @@ BEGIN
 		EXEC sp_xml_removedocument @hdoc;
 
 		-- SELECT * FROM @tmpPropiet
-
+		-- Proceso masivo
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-
 		BEGIN TRANSACTION
 
 		INSERT dbo.Propietario (
@@ -78,6 +80,43 @@ BEGIN
 			1
 		FROM @tmpPropiet tp
 
+		-- insert into bitacora
+
+		WHILE (SELECT COUNT(*) FROM @tmpPropiet) > 0
+		BEGIN
+			SET @valorDocID = (SELECT TOP 1 tmp.valorDocID FROM @tmpPropiet)
+			SET @idEntidad = (SELECT P.id FROM [dbo].[Propietario] P WHERE P.valorDocID = inputDocIDVal)
+			DELETE @tmpPropiet WHERE valorDocID = @valorDocID
+
+			SET @jsonDepues = (SELECT 
+								P.id AS 'ID', 
+								@inputName AS 'Nombre', 
+								@T.nombre AS 'Tipo DocID' , 
+								@inputDocIDVal AS 'Valor ID', 
+								'Activo' AS 'Estado'
+							FROM [dbo].[Propietario] P
+							JOIN [dbo].[idTipoDocID] T ON T.id = @DocidID
+							WHERE P.valorDocID = @inputDocIDVal
+							FOR JSON PATH,ROOT('Propietario'))
+
+			INSERT INTO [dbo].[Bitacora] (
+				idTipoEntidad,
+				idEntidad, 
+				jsonDespues,
+				insertedAt,
+				insertedBy,
+				insertedIn
+			) SELECT
+				T.id,
+				@idEntidad,
+				@jsonDespues,
+				GETDATE(),
+				CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
+				'192.168.1.7'
+			FROM [dbo].[TipoEntidad] T
+			WHERE T.Nombre = 'Propietario'
+
+		END
 		COMMIT
 
 		RETURN 1
