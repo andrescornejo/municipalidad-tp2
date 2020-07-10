@@ -33,7 +33,9 @@
             </div>
         </div>
     </div>
-    <%-- add jquery --%>
+    <%-- jQuery ,popper.js ,bootstrap.js --%>
     <script src="../Scripts/jquery-3.5.1.min.js"></script>
+    <script src="../Scripts/popper.min.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
 </body>
 </html>

@@ -14,7 +14,6 @@ namespace Muni
     {
         protected void loginBtn_Click(object sender, EventArgs e)
         {
-            LoginUser currentUser = LoginUser.getInstance(); // HERE
             string usernameGot, passwordGot;
 
             usernameGot = this.usernameTb.Text;
@@ -29,7 +28,9 @@ namespace Muni
             {
                 case 0:
                     Globals.setUser(usernameGot, false);
-                    throw new NotImplementedException("No se ha implementado el cliente");
+                    Response.Redirect("Client/ClientPanel.aspx");
+                    break;
+                    //throw new NotImplementedException("No se ha implementado el cliente");
                 case 1:
                     Globals.setUser(usernameGot, true);
                     Response.Redirect("Admin/AdminPage.aspx");

@@ -11,24 +11,53 @@ namespace Muni.Classes
 {
     public static class Globals
     {
+        #region LoginMethods
         //Login info will be stored here. Not really safe, but safety doesn't matter in this case.
-        private static string cURRENTUSER;
-        private static bool iSADMIN;
+        private static string cURRENTUSER = "b"; //""
+        private static bool iSADMIN = false;
+        private static int uSERID = 2; //-1
 
         public static string CURRENTUSER { get => cURRENTUSER; set => cURRENTUSER = value; }
         public static bool ISADMIN { get => iSADMIN; set => iSADMIN = value; }
+        public static int USERID { get => uSERID; set => uSERID = value; }
 
         public static void setUser(string username, bool isAdmin)
         {
             CURRENTUSER = username;
             ISADMIN = isAdmin;
+            getUserID();
         }
 
         public static void logoutUser()
         {
             CURRENTUSER = "";
             ISADMIN = false;
+            USERID = -1;
         }
+
+        public static void getUserID()
+        {
+            //Prepare db connection.
+            SqlConnection connection = getConnection();
+            //Prepare the command.
+            SqlCommand cmd = new SqlCommand("csp_getUserIDFromUsername", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+            //Declare the sp's return values.
+            cmd.Parameters.Add(new SqlParameter("@inputUsername", CURRENTUSER));
+            cmd.Parameters.Add("@outputID", SqlDbType.Int).Direction = ParameterDirection.Output;
+            //Open the db connection.
+            connection.Open();
+            //Excecute the sp.
+            cmd.ExecuteNonQuery();
+            //Set the return value.
+            int spOutput = Convert.ToInt32(cmd.Parameters["@outputID"].Value);
+            //Close the connection to the db.
+            connection.Close();
+            //Set the return value as the session's user ID.
+            USERID = spOutput;
+        }
+
+        #endregion
 
         //The connection string is stored here.
 
@@ -99,7 +128,7 @@ namespace Muni.Classes
 
             //Variable que guarda la tabla resultante del sp
             DataTable datatable = new DataTable();
-
+            
             //Preparo el SqlDataAdapter
             SqlDataAdapter sqlda = new SqlDataAdapter("csp_getPropiedadesDePropietario", connection);
             sqlda.SelectCommand.CommandType = CommandType.StoredProcedure;
