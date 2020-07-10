@@ -17,24 +17,36 @@ namespace Muni.Pages.Client
             this.welcomeLbl.Text = "Bienvenido, " + Globals.CURRENTUSER + ".";
             this.gridView.DataSource = Cliente.getClientProperties(Globals.CURRENTUSER);
             this.gridView.DataBind();
-            Console.WriteLine(Globals.USERID);
         }
 
         protected void logoutBtn_Click(object sender, EventArgs e)
         {
             Globals.logoutUser();
+            Cliente.clearCurrentPropery();
             Response.Redirect("../LoginPage.aspx");
         }
 
-        private string setPropID(string PropID)
+        private void setPropID(int propID)
         {
-            this.propidTB.Text = PropID;
-            return PropID;
+            Cliente.CURRENTPROPERTY = propID;
         }
 
         protected void verRecPen1Btn_Click(object sender, EventArgs e)
         {
+            if (propidTB.Text.Length == 0)
+                return;
 
+            string prop = propidTB.Text;
+
+            setPropID(Convert.ToInt32(prop));
+            lblModalTitle.Text = "Recibos pendientes";
+            lblModalBody.Text = "Recibos pendientes de la propiedad: " + prop;
+
+            this.gridModal.DataSource = Cliente.getRecibosPendientes(Cliente.CURRENTPROPERTY);
+            this.gridModal.DataBind();
+
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myModal", "$('#myModal').modal();", true);
+            upModal.Update();
         }
 
         protected void OnSelectedIndexChanged(object sender, EventArgs e)
@@ -44,6 +56,5 @@ namespace Muni.Pages.Client
 
             this.propidTB.Text = name;
         }
-
     }
 }

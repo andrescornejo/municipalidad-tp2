@@ -9,6 +9,15 @@ namespace Muni.Classes
 {
     public static class Cliente
     {
+        #region ClientData
+        private static int cURRENTPROPERTY = -1;
+
+        public static int CURRENTPROPERTY { get => cURRENTPROPERTY; set => cURRENTPROPERTY = value; }
+
+        public static void clearCurrentPropery() { CURRENTPROPERTY = -1; }
+
+        #endregion
+
         #region ClientMethods
         public static DataTable getClientProperties(string username)
         {
@@ -32,6 +41,22 @@ namespace Muni.Classes
             sqlda.Fill(datatable);
 
             //Cierro la conexion
+            connection.Close();
+
+            return datatable;
+        }
+
+        public static DataTable getRecibosPendientes(int propNum)
+        {
+            SqlConnection connection = Globals.getConnection();
+            DataTable datatable = new DataTable();
+
+            SqlDataAdapter sqlda = new SqlDataAdapter("csp_getRecibosPendientes", connection);
+            sqlda.SelectCommand.CommandType = CommandType.StoredProcedure;
+            sqlda.SelectCommand.Parameters.AddWithValue("@inNumFinca", propNum);
+
+            connection.Open();
+            sqlda.Fill(datatable);
             connection.Close();
 
             return datatable;

@@ -31,4 +31,25 @@ select 2, 3, 1
 
 select * from UsuarioVsPropiedad
 
+insert ComprobanteDePago(fecha, MontoTotal, activo)
+select '2020-5-8', 50000, 1
+
+insert ComprobanteDePago(fecha, MontoTotal, activo)
+select '2020-6-8', 50000, 1
+
+insert ComprobanteDePago(fecha, MontoTotal, activo)
+select '2020-7-8', 50000, 1
+
+select * from ComprobanteDePago
+
+insert Recibo(idComprobantePago, idPropiedad, idConceptoCobro, fecha, fechaVencimiento, monto, esPendiente, activo)
+select 1, 1, 1, '2020-5-8', '2020-5-17', 50000, 0, 1
+
+insert Recibo(idComprobantePago, idPropiedad, idConceptoCobro, fecha, fechaVencimiento, monto, esPendiente, activo)
+select 2, 1, 1, '2020-6-8', '2020-6-17', 50000, 0, 1
+
+insert Recibo(idComprobantePago, idPropiedad, idConceptoCobro, fecha, fechaVencimiento, monto, esPendiente, activo)
+select 3, 1, 1, '2020-7-10', '2020-7-17', 50000, 1, 1
+
+select * from Recibo
 

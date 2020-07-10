@@ -12,13 +12,14 @@
     <title>Panel de cliente</title>
 </head>
 <body>
-    <form id="loginForm" runat="server">
+    <form id="clientPanelForm" runat="server">
+    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
     <div class="container">
         <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-2 shadow">
             <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Panel de cliente</a>
             <ul class="navbar-nav px-3">
                 <li class="nav-item text-nowrap">
-                    <asp:Button ID="logoutBtn" runat="server" Text="Logout" OnClick="logoutBtn_Click" CssClass="btn btn-outline-danger my-2 my-sm-0" type="submit"/>
+                    <asp:Button ID="logoutBtn" runat="server" Text="Cerrar sesión" OnClick="logoutBtn_Click" CssClass="btn btn-outline-danger my-2 my-sm-0" type="submit"/>
                 </li>
             </ul>
         </nav>
@@ -45,12 +46,39 @@
 
         </div>
     </div>
-    
-    </form>
+
+
+    <!-- Modal code -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+            <asp:UpdatePanel ID="upModal" runat="server" ChildrenAsTriggers="false" UpdateMode="Conditional">
+                <ContentTemplate>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title"><asp:Label ID="lblModalTitle" runat="server" Text=""></asp:Label></h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <asp:Label ID="lblModalBody" runat="server" CssClass="lead" Text=""></asp:Label>
+                            <hr class="my-5"/>
+                            <asp:GridView ID="gridModal" runat="server" CssClass="table table-hover table-dark"></asp:GridView>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-info" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                        </div>
+                    </div>
+                </ContentTemplate>
+            </asp:UpdatePanel>
+        </div>
+    </div>
 
     <%-- jQuery ,popper.js ,bootstrap.js --%>
-    <script src="../Scripts/jquery-3.5.1.min.js"></script>
-    <script src="../Scripts/popper.min.js"></script>
-    <script src="../Scripts/bootstrap.min.js"></script>
+    <script src="../../Scripts/jquery-3.5.1.min.js"></script>
+    <script src="../../Scripts/popper.min.js"></script>
+    <script src="../../Scripts/bootstrap.min.js"></script>
+    </form>
+    
 </body>
 </html>
