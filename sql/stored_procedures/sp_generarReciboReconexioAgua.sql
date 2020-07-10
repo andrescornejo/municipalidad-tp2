@@ -3,19 +3,20 @@
  * Description: 
  * Author: Pablo Alpizar
  */
+USE municipalidad
+GO
 
-use municipalidad
-go
+CREATE
+	OR
 
-create or alter proc csp_generarReciboReconexiónAgua @inFecha DATE 
-as
-begin
-	begin try
-		set nocount on
-		
+ALTER PROC csp_generarReciboReconexiónAgua @inFecha DATE
+AS
+BEGIN
+	BEGIN TRY
+		SET NOCOUNT ON
+	END TRY
 
-	end try
-	begin catch
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK
 
@@ -26,7 +27,8 @@ begin
 		PRINT ('ERROR:' + @errorMsg)
 
 		RETURN - 1 * @@ERROR
-	end catch
-end
+	END CATCH
+END
+GO
 
-go
+

@@ -3,56 +3,61 @@
  * Description: 
  * Author: Pablo Alpizar
  */
+USE municipalidad
+GO
 
-use municipalidad
-go
+CREATE
+	OR
 
-create or alter proc csp_generarReciboCCFijo @inFecha DATE, 
-@inIdCC INT
-as
-begin
-	begin try
-		set nocount on        
-		DECLARE @DiaCobro INT = (SELECT C.DiaEmisionRecibo 
-                            FROM [dbo].[ConceptoCobro] C 
-                            WHERE C.id = @inIdCC)
+ALTER PROC csp_generarReciboCCFijo @inFecha DATE,
+	@inIdCC INT
+AS
+BEGIN
+	BEGIN TRY
+		SET NOCOUNT ON
 
-        IF @DiaCobro != (SELECT DAY (@inFecha))
-        BEGIN
-            RETURN
-        END
+		DECLARE @DiaCobro INT = (
+				SELECT C.DiaEmisionRecibo
+				FROM [dbo].[ConceptoCobro] C
+				WHERE C.id = @inIdCC
+				)
 
-		DECLARE @tmpPropiedadesTipoCC TABLE(
-            idPropiedad INT
-        )
-	
+		IF @DiaCobro != (
+				SELECT DAY(@inFecha)
+				)
+		BEGIN
+			RETURN
+		END
+
+		DECLARE @tmpPropiedadesTipoCC TABLE (idPropiedad INT)
+
 		INSERT INTO @tmpPropiedadesTipoCC (idPropiedad)
-        SELECT CP.idPropiedad FROM [dbo].[CCenPropiedad] CP 
+		SELECT CP.idPropiedad
+		FROM [dbo].[CCenPropiedad] CP
 		WHERE CP.idConceptoCobro = @inIdCC
 
-        INSERT INTO [dbo].[Recibo](
-            idPropiedad,
-            idConceptoCobro, 
-            fecha, 
-            fechaVencimiento, 
-            monto,
-            esPendiente,
-            Activo
-        )
-		SELECT
-			tmp.idPropiedad,
+		INSERT INTO [dbo].[Recibo] (
+			idPropiedad,
+			idConceptoCobro,
+			fecha,
+			fechaVencimiento,
+			monto,
+			esPendiente,
+			Activo
+			)
+		SELECT tmp.idPropiedad,
 			@inIdCC,
 			@inFecha,
-			DATEADD(DAY,CC.QDiasVencimiento, @inFecha),
+			DATEADD(DAY, CC.QDiasVencimiento, @inFecha),
 			CF.Monto,
 			1,
 			1
 		FROM @tmpPropiedadesTipoCC tmp
 		INNER JOIN [dbo].[ConceptoCobro] CC ON @inIdCC = CC.id
 		INNER JOIN [dbo].[CC_Fijo] CF ON @inIdCC = CF.id
-		
-	end try
-	begin catch
+	END TRY
+
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK
 
@@ -63,7 +68,8 @@ begin
 		PRINT ('ERROR:' + @errorMsg)
 
 		RETURN - 1 * @@ERROR
-	end catch
-end
+	END CATCH
+END
+GO
 
-go
+

@@ -3,9 +3,8 @@
  * Description: 
  * Author: Andres Cornejo
  */
-
-use municipalidad
-go
+USE municipalidad
+GO
 
 IF EXISTS (
 		SELECT *
@@ -18,82 +17,84 @@ BEGIN
 END
 GO
 
-create or alter proc csp_agregarTransConsumo @fechaInput DATE
-as
-begin
-	begin try
-		set nocount on
+CREATE
+	OR
 
-        DECLARE @MontoM3 MONEY
-        DECLARE @OperacionXML XML
+ALTER PROC csp_agregarTransConsumo @fechaInput DATE
+AS
+BEGIN
+	BEGIN TRY
+		SET NOCOUNT ON
 
-        SELECT @OperacionXML = O
+		DECLARE @MontoM3 MONEY
+		DECLARE @OperacionXML XML
+
+		SELECT @OperacionXML = O
 		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
-        DECLARE @hdoc INT
+		DECLARE @hdoc INT
+		DECLARE @tmpConsumo TABLE (
+			idTipoTransConsumo INT,
+			FechaXml DATE,
+			LecturaM3 INT,
+			Descripcion NVARCHAR(100),
+			NumFinca INT
+			)
 
-        DECLARE @tmpConsumo TABLE (
-            idTipoTransConsumo INT,
-            FechaXml DATE,
-            LecturaM3 INT,
-            Descripcion NVARCHAR(100),
-            NumFinca INT
-        )
-        
-                
-        SET @MontoM3 = (SELECT CC.ValorM3
-        FROM dbo.CC_ConsumoAgua CC 
-        INNER JOIN dbo.ConceptoCobro C ON C.nombre = 'Agua'
-        WHERE C.id = CC.id)
+		SET @MontoM3 = (
+				SELECT CC.ValorM3
+				FROM dbo.CC_ConsumoAgua CC
+				INNER JOIN dbo.ConceptoCobro C ON C.nombre = 'Agua'
+				WHERE C.id = CC.id
+				)
 
-        EXEC sp_xml_preparedocument @hdoc OUT,
-	    @OperacionXML
-        INSERT INTO @tmpConsumo(
-            idTipoTransConsumo,
-            FechaXml,
-            Descripcion,
-            NumFinca,
-            LecturaM3
-        ) 
-        SELECT 
-            X.id,
-            X.fecha,
-            X.descripcion,
-            X.NumFinca,
-            X.LecturaM3      
-        FROM openxml(@hdoc, '/Operaciones_por_Dia/OperacionDia/TransConsumo', 1) WITH ( 
-            id INT,
-            fecha DATE '../@fecha',
-            descripcion NVARCHAR(100),
-            NumFinca INT,
-            LecturaM3 INT
-        ) AS X
-        WHERE CONVERT(DATE,'2020-04-07') = fecha
+		EXEC sp_xml_preparedocument @hdoc OUT,
+			@OperacionXML
 
-        EXEC sp_xml_removedocument @hdoc;
+		INSERT INTO @tmpConsumo (
+			idTipoTransConsumo,
+			FechaXml,
+			Descripcion,
+			NumFinca,
+			LecturaM3
+			)
+		SELECT X.id,
+			X.fecha,
+			X.descripcion,
+			X.NumFinca,
+			X.LecturaM3
+		FROM openxml(@hdoc, '/Operaciones_por_Dia/OperacionDia/TransConsumo', 1) WITH (
+				id INT,
+				fecha DATE '../@fecha',
+				descripcion NVARCHAR(100),
+				NumFinca INT,
+				LecturaM3 INT
+				) AS X
+		WHERE CONVERT(DATE, '2020-04-07') = fecha
 
-        INSERT dbo.TransaccionConsumo (
-            idPropiedad,
-            fecha,
-            montoM3,
-            LecturaConsumoM3,
-            NuevoAcumulado,
-            activo,
-            idTipoTransConsumo
-        )
-        SELECT 
-            P.id,
-            tmp.FechaXml,
-            @MontoM3,
-            tmp.LecturaM3,
-            P.ConsumoAcumuladoM3,
-            1,
-            idTipoTransConsumo
-        FROM @tmpConsumo tmp    
-        INNER JOIN dbo.Propiedad P ON tmp.NumFinca = P.NumFinca
-        
-	end try
-	begin catch
+		EXEC sp_xml_removedocument @hdoc;
+
+		INSERT dbo.TransaccionConsumo (
+			idPropiedad,
+			fecha,
+			montoM3,
+			LecturaConsumoM3,
+			NuevoAcumulado,
+			activo,
+			idTipoTransConsumo
+			)
+		SELECT P.id,
+			tmp.FechaXml,
+			@MontoM3,
+			tmp.LecturaM3,
+			P.ConsumoAcumuladoM3,
+			1,
+			idTipoTransConsumo
+		FROM @tmpConsumo tmp
+		INNER JOIN dbo.Propiedad P ON tmp.NumFinca = P.NumFinca
+	END TRY
+
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK
 
@@ -104,6 +105,8 @@ begin
 		PRINT ('ERROR:' + @errorMsg)
 
 		RETURN - 1 * @@ERROR
-	end catch
-end
-go
+	END CATCH
+END
+GO
+
+
