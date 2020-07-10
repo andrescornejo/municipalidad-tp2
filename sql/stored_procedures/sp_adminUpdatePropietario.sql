@@ -33,11 +33,11 @@ BEGIN
 		SET @jsonAntes = (SELECT 
 							P.id AS 'ID', 
 							@inputName AS 'Nombre', 
-							@T.nombre AS 'Tipo DocID' , 
+							T.nombre AS 'Tipo DocID' , 
 							@inputDocIDVal AS 'Valor ID', 
 							'Activo' AS 'Estado'
 							FROM [dbo].[Propietario] P
-							JOIN [dbo].[idTipoDocID] T ON T.id = @DocidID
+							JOIN [dbo].[TipoDocID] T ON T.id = @DocidID
 							WHERE P.valorDocID = @inputDocIDVal
 							FOR JSON PATH, ROOT('Propietario'))
 
@@ -54,11 +54,11 @@ BEGIN
 		SET @jsonDespues = (SELECT 
 								P.id AS 'ID', 
 								@inputName AS 'Nombre', 
-								@T.nombre AS 'Tipo DocID' , 
+								T.nombre AS 'Tipo DocID' , 
 								@inputDocIDVal AS 'Valor ID', 
 								'Activo' AS 'Estado'
 							FROM [dbo].[Propietario] P
-							JOIN [dbo].[idTipoDocID] T ON T.id = @DocidID
+							JOIN [dbo].[TipoDocID] T ON T.id = @DocidID
 							WHERE P.valorDocID = @inputDocIDVal
 							FOR JSON PATH, ROOT('Propietario'))
 
@@ -76,10 +76,10 @@ BEGIN
 			@jsonAntes,
 			@jsonDespues,
 			GETDATE(),
-			@inputInsertBy,
-			@inputInsertIn
+			@inputInsertedBy,
+			@inputInsertedIn
 		FROM [dbo].[TipoEntidad] T
-		JOIN [dbo].[Propietario] P ON P.valorDocID = @inputDocIDVal and activo = 1
+		JOIN [dbo].[Propietario] P ON P.valorDocID = @inputDocIDVal and P.activo = 1
 		WHERE T.Nombre = 'Propietario'
 		COMMIT
 

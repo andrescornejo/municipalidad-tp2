@@ -19,6 +19,7 @@ BEGIN
 		DECLARE @jsonDespues NVARCHAR(500)
 		DECLARE @FincaRef INT
 		DECLARE @PropRef INT
+		DECLARE @idEntidad INT
 
 		SELECT @OperacionXML = O
 		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
@@ -73,7 +74,7 @@ BEGIN
 			SET @PropRef = (SELECT TOP 1 tmp.identificacion FROM @tmpProtxProp tmp)
 			DELETE @tmpProtxProp WHERE NumFinca = @FincaRef AND identificacion = @PropRef 
 
-			SET @idEntidad = (SELECT pp.id FROM [dbo].[PropiedadDelPropietario]
+			SET @idEntidad = (SELECT pp.id FROM [dbo].[PropiedadDelPropietario] pp
 							INNER JOIN Propietario P ON P.valorDocID = @PropRef
 							INNER JOIN Propiedad PO ON PO.NumFinca = @FincaRef
 							WHERE P.id = pp.idPropietario AND PO.id = idPropiedad)

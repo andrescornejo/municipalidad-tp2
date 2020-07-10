@@ -25,12 +25,12 @@ begin
 		SELECT DISTINCT R.idComprobantePago 
 		FROM [dbo].[Recibo] R
 		INNER JOIN [dbo].[Propiedad] P ON @inNumFinca = P.NumFinca
-		WHERE R.idPropiedad = P.id AND R.activo = 1 AND R.esPediente = 0
+		WHERE R.idPropiedad = P.id AND R.activo = 1 AND R.esPendiente = 0
 
 
 		WHILE (SELECT COUNT(*) FROM @tmpIdComprob) > 0
 		BEGIN
-			SET @idRef = (SELECT TOP 1 tmp.idComprobante FROM @tmpIdComprob)
+			SET @idRef = (SELECT TOP 1 tmp.idComprobante FROM @tmpIdComprob tmp)
 			DELETE @tmpIdComprob WHERE idComprobante = @idRef
 
 			INSERT @tmpComprobantes (

@@ -7,7 +7,7 @@
 use municipalidad
 go
 
-create or alter proc csp_PagoAgua @inNumFinca INT, 
+create or alter proc csp_RealizarPago @inNumFinca INT, 
 @inIdComprobante INT, 
 @inFecha DATE,
 @idTipoCC INT
@@ -26,7 +26,7 @@ begin
 		INSERT INTO @tmpReciboPediente
 		SELECT R.id FROM [dbo].[Recibo] R
 		INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @inNumFinca
-		WHERE R.esPediente = 1 AND R.idPropiedad = P.id 
+		WHERE R.esPendiente = 1 AND R.idPropiedad = P.id 
 			AND R.activo = 1 AND idConceptoCobro = @idTipoCC
 		ORDER BY R.fecha ASC
 		
@@ -44,7 +44,7 @@ begin
 
 			SET @InterestMot = CASE 
 			WHEN @inFecha <= @FechaVenc THEN 0
-			ELSE (@MontoRecibo * @TasaInterest / 365) * ABS(DATEDIFF(@FechaVenc, @inFecha))
+			ELSE (@MontoRecibo * @TasaInterest / 365) * ABS(DATEDIFF(DAY,@FechaVenc, @inFecha))
 			END
 			-- Si existen intereses moratorios entonces generamos un recibo por el monto
 			IF @InterestMot > 0 
@@ -56,7 +56,7 @@ begin
             		fecha, 
             		fechaVencimiento, 
             		monto,
-            		esPediente,
+            		esPendiente,
             		Activo
         			)
 				SELECT 
@@ -71,14 +71,14 @@ begin
 				FROM [dbo].[Propiedad] P
 				JOIN [dbo].[ConceptoCobro] CC ON CC.nombre = 'Interes Moratorio'
 				-- incluimos en valor del recibo en el comprobante
-				UPDATE [dbo].[ComprobantePago]
+				UPDATE [dbo].[ComprobanteDePago]
 				SET MontoTotal = MontoTotal + @InterestMot
 				WHERE id = @inIdComprobante	
 			END
 
 			-- Actualizo los valores del recibo
 			UPDATE [dbo].[Recibo]
-			SET esPediente = 0
+			SET esPendiente = 0
 			WHERE id = @idRecibo
 			-- Actualizo el idComprobante
 			UPDATE [dbo].[Recibo]
@@ -86,10 +86,11 @@ begin
 			WHERE id = @idRecibo
 
 			-- Actualizo el monto total del comprobante
-			UPDATE [dbo].[ComprobantePago]
+			UPDATE [dbo].[ComprobanteDePago]
 			SET MontoTotal = MontoTotal + (SELECT R.monto FROM [dbo].[Recibo] R WHERE R.id = @idRecibo)
 			WHERE id = @inIdComprobante
 		END
+
 		COMMIT
 
 	end try

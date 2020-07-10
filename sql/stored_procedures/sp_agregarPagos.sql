@@ -85,7 +85,7 @@ BEGIN
                     DELETE @tmpPagoProp 
                     WHERE idTipoRecibo = @idCC
 
-                    EXEC csp_PagoAgua @NumFinca, @idComprobante, @fechaInput, @idCC
+                    EXEC csp_RealizarPago @NumFinca, @idComprobante, @fechaInput, @idCC
                 END
             END
         COMMIT
