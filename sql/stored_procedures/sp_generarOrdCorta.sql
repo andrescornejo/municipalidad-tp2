@@ -12,8 +12,20 @@ as
 begin
 	begin try
 		set nocount on
-	--sp code here
+		
+		DECLARE @tmpProp_CCAgua TABLE (idPropiedad INT)
+		DECLARE @idPropiedad INT
 
+		INSERT INTO @tmpPropiedadesCC_Agua (idPropiedad)
+        SELECT CP.idPropiedad FROM [dbo].[CCenPropiedad] CP WHERE CP.idConceptoCobro = @idCCAgua
+
+		WHILE (SELECT COUNT(*) FROM @tmpProp_CCAgua) > 0
+		BEGIN
+			-- tomar la primera propiedad
+			SET @idPropiedad = (SELECT TOP 1 tmp.idPropiedad FROM @tmpProp_CCAgua)
+			DELETE @tmpProp_CCAgua WHERE idPropiedad = @idPropiedad
+
+		END
 	end try
 	begin catch
 		IF @@TRANCOUNT > 0

@@ -48,18 +48,17 @@ begin
         BEGIN TRANSACTION
         WHILE (SELECT COUNT(*) FROM @tmpValorProp ) > 0
         BEGIN
+            --Seleccionamos la primera tabla
             SELECT TOP 1 @numFinca = tmp.NumFinca FROM @tmpValorProp tmp
+            -- Borramos el registro
+            DELETE @tmpValorProp WHERE NumFinca  =  @numFinca        
 
             UPDATE dbo.Propiedad
             SET Valor = (SELECT tmp.Valor
                         FROM @tmpValorProp tmp
                         WHERE NumFinca = tmp.NumFinca)
             WHERE NumFinca = (SELECT tmp.NumFinca FROM @tmpValorProp tmp)
-
-            
-            -- add change to bitacora table
-
-            DELETE @tmpValorProp WHERE NumFinca  =  @numFinca
+            -- add change to bitacora table triggers
         END
         COMMIT
 	end try
