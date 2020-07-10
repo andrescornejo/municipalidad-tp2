@@ -24,17 +24,20 @@ BEGIN
 		DECLARE @jsonAntes NVARCHAR(500)
 		DECLARE @jsonDespues NVARCHAR(500)
 		DECLARE @Admin INT
+		DECLARE @idEntidad INT
 
 		EXEC @idUser = csp_getUserIDFromUsername @inputOLDUsername
 		
-		SET @idEntidad = (SELECT U.id FROM [dbo].[Usuario] U WHERE U.username = @inputUsername)
-		SET @Admin = (CASE WHEN @inputBit = 1
+		SET @idEntidad = (SELECT U.id FROM [dbo].[Usuario] U WHERE U.username = @inputOLDUsername)
+		
+		SET @Admin = (CASE WHEN @inputAdminStatus = 1
 						THEN 'Administrador'
 						ELSE 'Cliente'
 					END)
+		
 		SET @jsonAntes = (SELECT
 							@idEntidad AS 'ID',
-							@inputUsername AS 'Nombre Usuario', 
+							@inputOLDUsername AS 'Nombre Usuario', 
 							'*******' AS 'Contrasenna', 
 							@Admin AS 'Tipo Usuario', 
 							'Activo' AS 'Estado'
@@ -53,7 +56,7 @@ BEGIN
 
 		SET @jsonDespues = (SELECT
 								@idEntidad AS 'ID',
-								@inputUsername AS 'Nombre Usuario', 
+								@inputNewUsername AS 'Nombre Usuario', 
 								'*******' AS 'Contrasenna', 
 								@Admin AS 'Tipo Usuario', 
 								'Activo' AS 'Estado'
@@ -73,10 +76,10 @@ BEGIN
 			@jsonAntes,
 			@jsonDespues,
 			GETDATE(),
-			@inputInsertBy,
-			@inputInsertIn
+			@inputInsertedBy,
+			@inputInsertedIn
 		FROM [dbo].[TipoEntidad] T
-		JOIN [dbo].[Usuario] U ON @inputUsername = U.username AND U.activo = 1 
+		JOIN [dbo].[Usuario] U ON @inputNewUsername = U.username AND U.activo = 1 
 		WHERE T.Nombre = 'Usuario'
 		
 		COMMIT

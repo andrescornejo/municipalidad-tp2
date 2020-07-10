@@ -72,7 +72,6 @@ begin
 
         EXEC sp_xml_removedocument @hdoc;
 
-        /*
         INSERT dbo.TransaccionConsumo (
             idPropiedad,
             fecha,
@@ -83,17 +82,16 @@ begin
             idTipoTransConsumo
         )
         SELECT 
-            P.id
+            P.id,
             tmp.FechaXml,
             @MontoM3,
-            --LecturaM3 (Tengo una duda si es la LecturaM3 que viene en el xml o es el consumo del mes),
-            -- NuevoAcumulado (Relacion con la duda de arriba),
+            tmp.LecturaM3,
+            P.ConsumoAcumuladoM3,
             1,
             idTipoTransConsumo
         FROM @tmpConsumo tmp    
         INNER JOIN dbo.Propiedad P ON tmp.NumFinca = P.NumFinca
         
-        */
 	end try
 	begin catch
 		IF @@TRANCOUNT > 0

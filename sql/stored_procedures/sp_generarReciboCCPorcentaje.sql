@@ -13,7 +13,7 @@ as
 begin
 	begin try
 		set nocount on
-		SELECT @DiaCobro = (SELECT C.DiaEmisionRecibo 
+		DECLARE @DiaCobro INT = (SELECT C.DiaEmisionRecibo 
                             FROM [dbo].[ConceptoCobro] C 
                             WHERE C.id = @inIdCC)
 

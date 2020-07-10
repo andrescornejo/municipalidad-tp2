@@ -20,6 +20,7 @@ BEGIN
 	DECLARE @jsonDespuesUsuario NVARCHAR(500)
 	DECLARE @idEntidad INT
 	DECLARE @Admin NVARCHAR(20)
+	DECLARE @isAdmin BIT
 	DECLARE @idUsuario INT = (
 			SELECT id
 			FROM Usuario
@@ -27,8 +28,9 @@ BEGIN
 			)
 
 	BEGIN TRY
+		SET @isAdmin = (SELECT U.isAdmin FROM [dbo].[Usuario] U WHERE U.id = @usuarioIDInput)
 
-		SET @Admin = (CASE WHEN @inputBit = 1
+		SET @Admin = (CASE WHEN @isAdmin = 1
 						THEN 'Administrador'
 						ELSE 'Cliente'
 					END)
@@ -40,7 +42,7 @@ BEGIN
 									@Admin AS 'Tipo Usuario', 
 									'Activo' AS 'Estado'
  							FROM [dbo].[Usuario] U
-							WHERE U.id = idUsuario
+							WHERE U.id = @usuarioIDInput
 							FOR JSON PATH, ROOT('Usuario'))
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
@@ -65,7 +67,7 @@ BEGIN
 									@Admin AS 'Tipo Usuario', 
 									'Inactivo' AS 'Estado'
  							FROM [dbo].[Usuario] U
-							WHERE U.id = idUsuario
+							WHERE U.id = @usuarioIDInput
 							FOR JSON PATH, ROOT('Usuario'))
 
 		INSERT INTO [dbo].[Bitacora] (
@@ -82,8 +84,8 @@ BEGIN
 			@jsonAntesUsuario,
 			@jsonDespuesUsuario,
 			GETDATE(),
-			@inputInsertBy,
-			@inputInsertIn
+			@inputInsertedBy,
+			@inputInsertedIn
 		FROM [dbo].[TipoEntidad] T
 		WHERE T.Nombre = 'Usuario'
 		COMMIT

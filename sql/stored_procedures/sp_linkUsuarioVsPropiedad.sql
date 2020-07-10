@@ -18,6 +18,8 @@ BEGIN
 		DECLARE @UserRef NVARCHAR(100)
 		DECLARE @PropiedadRef INT
 		DECLARE @OperacionXML XML
+		DECLARE @idEntidad INT
+		DECLARE @jsonDespues NVARCHAR(500)
 
 		SELECT @OperacionXML = O
 		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
