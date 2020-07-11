@@ -2,6 +2,7 @@
  * Stored Procedure: csp_adminUpdateUsuario
  * Description: Actualizacion de un Usuario por un Admin.
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO

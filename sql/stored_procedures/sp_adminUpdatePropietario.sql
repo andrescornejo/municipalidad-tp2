@@ -2,6 +2,7 @@
  * Stored Procedure: csp_adminUpdatePropietario
  * Description: Actualizacion de informacion a Propietario por parte de un Admin.
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO

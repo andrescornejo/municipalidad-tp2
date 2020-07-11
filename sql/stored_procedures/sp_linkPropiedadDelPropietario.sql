@@ -2,6 +2,7 @@
  * Stored Procedure: csp_linkPropiedadDelPropietario
  * Description: Links PropiedadDelPropietario table with Propiedad and Propietario
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO
@@ -9,20 +10,15 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_linkPropiedadDelPropietario @fechaInput DATE
+ALTER PROC csp_linkPropiedadDelPropietario @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-
-		DECLARE @OperacionXML XML
 		DECLARE @jsonDespues NVARCHAR(500)
 		DECLARE @FincaRef INT
-		DECLARE @PropRef INT
+		DECLARE @PropRef NVARCHAR(100)
 		DECLARE @idEntidad INT
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
 		DECLARE @hdoc INT
 
@@ -50,6 +46,7 @@ BEGIN
 				)
 		WHERE @fechaInput = fecha
 
+		EXEC sp_xml_removedocument @hdoc;
 		--select * from @tmpProtxProp
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION
@@ -99,7 +96,7 @@ BEGIN
 				T.id,
 				@idEntidad,
 				@jsonDespues,
-				GETDATE(),
+				@fechaInput,
 				CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
 				'192.168.1.7'
 			FROM [dbo].[TipoEntidad] T
