@@ -42,7 +42,7 @@ namespace Muni.Pages.Client
         protected void OnSelectedIndexChanged(object sender, EventArgs e)
         {
             //Accessing BoundField Column.
-            string name = gridView.SelectedRow.Cells[0].Text;
+            string name = gridView.SelectedRow.Cells[1].Text;
 
             this.propidTB.Text = name;
         }

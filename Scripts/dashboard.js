@@ -6,4 +6,10 @@ function openNav() {
   /* Close */
   function closeNav() {
     document.getElementById("myNav").style.height = "0%";
-  } 
+  }
+   
+  $('.datepicker').datepicker({
+    format: 'yyyy/mm/dd',
+    startDate: '-1m',
+    autoclose: true,
+});

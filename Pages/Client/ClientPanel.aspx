@@ -15,7 +15,7 @@
     <form id="clientPanelForm" runat="server">
     <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
     <div class="container">
-        <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-2 shadow">
+        <nav class="navbar navbar-dark bg-dark fixed-top flex-md-nowrap p-2 shadow" >
             <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Panel de cliente</a>
             <ul class="navbar-nav px-3">
                 <li class="nav-item text-nowrap">
@@ -40,20 +40,19 @@
             <hr class="my-4"/>
             <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false" OnSelectedIndexChanged = "OnSelectedIndexChanged">
                 <Columns>
+                    <asp:ButtonField Text="Seleccionar Propiedad" CommandName="Select" ItemStyle-Width="100"/>
                     <asp:BoundField DataField="# Propiedad" HeaderText="# Propiedad" />
                     <asp:BoundField DataField="Valor" HeaderText="Valor" />
                     <asp:BoundField DataField="Direccion" HeaderText="Dirección" />
-                    <asp:ButtonField Text="Seleccionar Propiedad" CommandName="Select" ItemStyle-Width="100"/>
                 </Columns>
             </asp:GridView>
-
         </div>
     </div>
 
 
     <!-- Modal code -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <asp:UpdatePanel ID="upModal" runat="server" ChildrenAsTriggers="false" UpdateMode="Conditional">
                 <ContentTemplate>
                     <div class="modal-content">
