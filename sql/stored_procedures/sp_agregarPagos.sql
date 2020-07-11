@@ -17,7 +17,7 @@ BEGIN
 END
 GO
 
-CREATE PROC csp_agregarPagos @fechaInput DATE
+CREATE PROC csp_agregarPagos @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
@@ -25,10 +25,6 @@ BEGIN
         DECLARE @idCC INT
         DECLARE @NumFinca INT
         DECLARE @idComprobante INT
-		DECLARE @OperacionXML XML
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
 		DECLARE @hdoc INT
         
@@ -76,7 +72,7 @@ BEGIN
                 INSERT INTO [dbo].[ComprobanteDePago] (fecha,MontoTotal,activo)
                 SELECT @fechaInput, 0, 1
 
-                SET @idComprobante = SCOPE_IDENTITY()
+                SET @idComprobante = (SELECT TOP 1 CP.id FROM [dbo].[ComprobanteDePago] CP ORDER BY CP.id DESC)
 
                 WHILE (SELECT COUNT(*) FROM @tmpPagoProp) > 0
                 BEGIN

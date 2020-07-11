@@ -9,18 +9,13 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_agregarCambioValorPropiedad (@inFecha DATE)
+ALTER PROC csp_agregarCambioValorPropiedad (@inFecha DATE, @OperacionXML XML)
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-
-		DECLARE @OperacionXML XML
 		DECLARE @hdoc INT
 		DECLARE @numFinca INT
-
-		SELECT @OperacionXML = O
-		FROM OPENROWSET(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
 		EXEC sp_xml_preparedocument @hdoc OUT,
 			@OperacionXML

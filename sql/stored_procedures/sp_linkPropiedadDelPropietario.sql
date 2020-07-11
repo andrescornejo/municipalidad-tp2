@@ -10,20 +10,15 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_linkPropiedadDelPropietario @fechaInput DATE
+ALTER PROC csp_linkPropiedadDelPropietario @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-
-		DECLARE @OperacionXML XML
 		DECLARE @jsonDespues NVARCHAR(500)
 		DECLARE @FincaRef INT
-		DECLARE @PropRef INT
+		DECLARE @PropRef NVARCHAR(100)
 		DECLARE @idEntidad INT
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
 		DECLARE @hdoc INT
 
@@ -51,6 +46,7 @@ BEGIN
 				)
 		WHERE @fechaInput = fecha
 
+		EXEC sp_xml_removedocument @hdoc;
 		--select * from @tmpProtxProp
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION

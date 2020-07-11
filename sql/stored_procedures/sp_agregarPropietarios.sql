@@ -18,19 +18,14 @@ BEGIN
 END
 GO
 
-CREATE PROC csp_agregarPropietarios @fechaInput DATE
+CREATE PROC csp_agregarPropietarios @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-
-		DECLARE @OperacionXML XML
 		DECLARE @jsonDespues NVARCHAR(500)
-		DECLARE @valorDocID INT
+		DECLARE @valorDocID NVARCHAR(100)
 		DECLARE @idEntidad INT
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
 		DECLARE @hdoc INT
 

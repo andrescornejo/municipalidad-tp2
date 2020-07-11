@@ -20,18 +20,13 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_agregarTransConsumo @inFecha DATE
+ALTER PROC csp_agregarTransConsumo @inFecha DATE,  @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-
 		DECLARE @MontoM3 MONEY
-		DECLARE @OperacionXML XML
 		DECLARE @NumFincaRef INT
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
 		DECLARE @hdoc INT
 		DECLARE @tmpConsumo TABLE (

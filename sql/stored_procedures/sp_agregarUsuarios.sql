@@ -10,19 +10,15 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_agregarUsuarios @fechaInput DATE
+ALTER PROC csp_agregarUsuarios @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 		DECLARE @jsonDespues NVARCHAR(500)
-		DECLARE @OperacionXML XML
 		DECLARE @idEntidad INT
 		DECLARE @Admin NVARCHAR(20)
 		DECLARE @username NVARCHAR(100)
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
 		DECLARE @hdoc INT
 
@@ -41,16 +37,18 @@ BEGIN
 			fechaxml
 			)
 		SELECT Nombre,
-			passwd,
+			password,
 			fecha
 		FROM openxml(@hdoc, '/Operaciones_por_Dia/OperacionDia/Usuario', 1) WITH (
 				Nombre NVARCHAR(50),
-				passwd NVARCHAR(max),
+				password NVARCHAR(max),
 				fecha DATE '../@fecha'
 				)
 		WHERE @fechaInput = fecha
 
-		-- SELECT * FROM @tmpUsuario
+
+		EXEC sp_xml_removedocument @hdoc;
+		--SELECT * FROM @tmpUsuario
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 
