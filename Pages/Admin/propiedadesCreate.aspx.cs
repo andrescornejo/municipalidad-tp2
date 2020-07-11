@@ -14,7 +14,7 @@ namespace Muni.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
             usernameGot = Request.QueryString["username"];
-            this.gridView.DataSource = God.getPropiedades();
+            this.gridView.DataSource = Globals.getPropiedades();
             this.gridView.DataBind();
         }
         protected void backBtn_Click(object sender, EventArgs e)
@@ -31,11 +31,11 @@ namespace Muni.Pages
 
             if (numFinca != 0 && direccion.Length != 0)
             {
-                God.addPropiedad(numFinca, valorFinca, direccion);
+                Globals.addPropiedad(numFinca, valorFinca, direccion);
                 this.textBoxNumFincaInput.Text = "";
                 this.textBoxValorMonetario.Text = "";
                 this.textBoxDireccion.Text = "";
-                this.gridView.DataSource = God.getPropiedades();
+                this.gridView.DataSource = Globals.getPropiedades();
                 this.gridView.DataBind();
                 MessageBox.Show("Propiedad agregada: " + numFinca);
             }

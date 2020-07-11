@@ -14,7 +14,7 @@ namespace Muni.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
             usernameGot = Request.QueryString["username"];
-            this.gridView.DataSource = God.getPropietarios();
+            this.gridView.DataSource = Globals.getPropietarios();
             this.gridView.DataBind();
         }
         protected void backBtn_Click(object sender, EventArgs e)
@@ -29,10 +29,10 @@ namespace Muni.Pages
 
             if (newName.Length != 0 && newDocID.Length != 0)
             {
-                God.addPropietario(newName, newDocID, docIDVal);
+                Globals.addPropietario(newName, newDocID, docIDVal);
                 this.textBoxNameInput.Text = "";
                 this.textBoxDocIDInput.Text = "";
-                this.gridView.DataSource = God.getPropietarios();
+                this.gridView.DataSource = Globals.getPropietarios();
                 this.gridView.DataBind();
                 MessageBox.Show("Propietario agregado: " + newName);
             }

@@ -5,6 +5,7 @@
 - [x] Restructure the logical layer
 - [x] Start programming the logical layer
 
+## notes:
 Connection string for dekstop: 
 Data Source=HOTHEAD\SQLEXPRESS;Initial Catalog=municipalidad;Integrated Security=True
 

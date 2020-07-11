@@ -16,6 +16,10 @@ BEGIN
 		SET NOCOUNT ON
 
 		DECLARE @OperacionXML XML
+		DECLARE @jsonDespues NVARCHAR(500)
+		DECLARE @FincaRef INT
+		DECLARE @PropRef INT
+		DECLARE @idEntidad INT
 
 		SELECT @OperacionXML = O
 		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
@@ -48,7 +52,6 @@ BEGIN
 
 		--select * from @tmpProtxProp
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-
 		BEGIN TRANSACTION
 
 		INSERT dbo.PropiedadDelPropietario (
@@ -62,8 +65,46 @@ BEGIN
 		FROM @tmpProtxProp AS pp
 		JOIN Propietario P ON P.valorDocID = pp.identificacion
 		JOIN Propiedad PO ON PO.NumFinca = pp.NumFinca
-
+		
 		--select * from PropiedadDelPropietario
+
+		WHILE (SELECT COUNT(*) FROM @tmpProtxProp) > 0
+		BEGIN
+			SET @FincaRef = (SELECT TOP 1 tmp.NumFinca FROM @tmpProtxProp tmp)
+			SET @PropRef = (SELECT TOP 1 tmp.identificacion FROM @tmpProtxProp tmp)
+			DELETE @tmpProtxProp WHERE NumFinca = @FincaRef AND identificacion = @PropRef 
+
+			SET @idEntidad = (SELECT pp.id FROM [dbo].[PropiedadDelPropietario] pp
+							INNER JOIN Propietario P ON P.valorDocID = @PropRef
+							INNER JOIN Propiedad PO ON PO.NumFinca = @FincaRef
+							WHERE P.id = pp.idPropietario AND PO.id = idPropiedad)
+
+			SET @jsonDespues = (SELECT 
+								@FincaRef AS 'Numero Finca',
+								P.nombre AS 'Propietario',
+								@PropRef AS 'Identificacion',
+								'activo' AS 'Estado'
+								FROM [dbo].[Propietario] P
+								WHERE P.valorDocID = @PropRef
+								FOR JSON PATH, ROOT('Propiedad-Propietario'))
+
+			INSERT INTO [dbo].[Bitacora] (
+				idTipoEntidad,
+				idEntidad, 
+				jsonDespues,
+				insertedAt,
+				insertedBy,
+				insertedIn
+			) SELECT
+				T.id,
+				@idEntidad,
+				@jsonDespues,
+				GETDATE(),
+				CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
+				'192.168.1.7'
+			FROM [dbo].[TipoEntidad] T
+			WHERE T.Nombre = 'PropiedadVsPropietario'
+		END
 		COMMIT
 
 		RETURN 1

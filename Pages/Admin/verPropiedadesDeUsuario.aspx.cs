@@ -10,7 +10,7 @@ namespace Muni.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
             usernameGot = Request.QueryString["username"];
-            this.gridView.DataSource = God.getUsernames();
+            this.gridView.DataSource = Globals.getUsernames();
             this.gridView.DataBind();
         }
 
@@ -25,7 +25,7 @@ namespace Muni.Pages
             if (idPropietario.Length != 0)
             {
 
-                DataTable dt = God.getUsuariosDeLaPropiedad(idPropietario);
+                DataTable dt = Globals.getUsuariosDeLaPropiedad(idPropietario);
                 this.gridView.DataSource = dt;
                 this.gridView.DataBind();
 

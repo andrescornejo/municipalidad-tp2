@@ -40,7 +40,7 @@ BEGIN
 			fechaxml DATE
 			)
 
-		INSERT @tmpProp (
+		INSERT INTO @tmpProp (
 			NumFinca,
 			Valor,
 			Direccion,

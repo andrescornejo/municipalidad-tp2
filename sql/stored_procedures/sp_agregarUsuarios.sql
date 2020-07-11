@@ -14,8 +14,10 @@ AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-
+		DECLARE @jsonDespues NVARCHAR(500)
 		DECLARE @OperacionXML XML
+		DECLARE @idEntidad INT
+		DECLARE @Admin NVARCHAR(20)
 
 		SELECT @OperacionXML = O
 		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
@@ -64,6 +66,40 @@ BEGIN
 			1
 		FROM @tmpUsuario t
 
+
+		WHILE (SELECT COUNT(*) FROM @tmpUsuario) > 0
+		BEGIN
+			
+
+			SET @Admin = (CASE WHEN @inputBit = 1
+							THEN 'Administrador'
+							ELSE 'Cliente'
+						END)
+			SET @jsonDespues = (SELECT
+								@idEntidad AS 'ID',
+								@inputUsername AS 'Nombre Usuario', 
+								'*******' AS 'Contrasenna', 
+								@Admin AS 'Tipo Usuario', 
+								'Activo' AS 'Estado'
+								FOR JSON PATH, ROOT('Usuario'))
+
+			INSERT INTO [dbo].[Bitacora] (
+				idTipoEntidad,
+				idEntidad, 
+				jsonDespues,
+				insertedAt,
+				insertedBy,
+				insertedIn
+			) SELECT
+				T.id,
+				@idEntidad,
+				@jsonDespues,
+				GETDATE(),
+				CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
+				'192.168.1.7'
+			FROM [dbo].[TipoEntidad] T
+			WHERE T.Nombre = 'Usuario'
+		END
 		COMMIT
 
 		RETURN 1
