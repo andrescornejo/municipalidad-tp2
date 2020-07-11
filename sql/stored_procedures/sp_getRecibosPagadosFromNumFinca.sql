@@ -1,7 +1,7 @@
 /*
  * Stored Procedure: csp_getRecibosPagados 
  * Description: 
- * Author: Andres Cornejo
+ * Author: Pablo Alpizar
  */
 USE municipalidad
 GO

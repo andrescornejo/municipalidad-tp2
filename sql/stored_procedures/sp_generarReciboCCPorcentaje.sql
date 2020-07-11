@@ -1,5 +1,5 @@
 /*
- * Stored Procedure: 
+ * Stored Procedure: csp_generarReciboCCPorcentaje
  * Description: 
  * Author: Pablo Alpizar
  */

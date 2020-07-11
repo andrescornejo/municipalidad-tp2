@@ -2,6 +2,7 @@
  * Stored Procedure: csp_linkPropiedadDelPropietario
  * Description: Links PropiedadDelPropietario table with Propiedad and Propietario
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO
@@ -99,7 +100,7 @@ BEGIN
 				T.id,
 				@idEntidad,
 				@jsonDespues,
-				GETDATE(),
+				@fechaInput,
 				CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
 				'192.168.1.7'
 			FROM [dbo].[TipoEntidad] T

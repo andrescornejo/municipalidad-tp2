@@ -2,6 +2,7 @@
  * Stored Procedure: csp_agregarUsuarios
  * Description: Agrega los usuarios de una fecha
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO

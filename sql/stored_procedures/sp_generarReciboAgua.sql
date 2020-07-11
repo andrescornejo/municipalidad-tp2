@@ -1,5 +1,5 @@
 /*
- * Stored Procedure: 
+ * Stored Procedure: csp_generarRecibosAgua
  * Description: 
  * Author: Pablo Alpizar
  */

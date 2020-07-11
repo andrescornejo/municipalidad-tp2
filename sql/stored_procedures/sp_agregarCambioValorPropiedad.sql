@@ -3,76 +3,89 @@
  * Description: 
  * Author: Pablo Alpizar
  */
+USE municipalidad
+GO
 
-use municipalidad
-go
+CREATE
+	OR
 
-create or alter proc csp_agregarCambioValorPropiedad (
-    @inFechaInput DATE 
-)as
-begin
-	begin try
-		set nocount on
+ALTER PROC csp_agregarCambioValorPropiedad (@inFecha DATE)
+AS
+BEGIN
+	BEGIN TRY
+		SET NOCOUNT ON
 
-        DECLARE @OperacionXML XML
-        DECLARE @hdoc INT
-        DECLARE @numFinca INT
+		DECLARE @OperacionXML XML
+		DECLARE @hdoc INT
+		DECLARE @numFinca INT
 
-        SELECT @OperacionXML = O
-        FROM OPENROWSET(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
+		SELECT @OperacionXML = O
+		FROM OPENROWSET(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
+		EXEC sp_xml_preparedocument @hdoc OUT,
+			@OperacionXML
 
-        EXEC sp_xml_preparedocument @hdoc OUT,
-            @OperacionXML
+		DECLARE @tmpValorProp TABLE (
+			NumFinca INT,
+			Valor MONEY
+			)
 
-        DECLARE @tmpValorProp TABLE (
-            NumFinca INT,
-            Valor MONEY
-        )
+		INSERT INTO @tmpValorProp (
+			NumFinca,
+			Valor
+			)
+		SELECT NumFinca,
+			NuevoValor
+		FROM openxml(@hdoc, '/Operaciones_por_Dia/OperacionDia/CambioPropiedad ', 1) WITH (
+				NumFinca INT,
+				NuevoValor MONEY,
+				fecha DATE '../@fecha'
+				)
+		WHERE @inFecha = fecha
 
-        INSERT INTO @tmpValorProp(
-            NumFinca,
-            Valor
-        ) 
-        SELECT NumFinca,
-            NuevoValor
-        FROM openxml(@hdoc, '/Operaciones_por_Dia/OperacionDia/CambioPropiedad ', 1)
-        WITH (
-            NumFinca INT,
-            NuevoValor MONEY,
-            fecha DATE '../@fecha'
-        )
-        WHERE CONVERT(DATE, '2020-02-10') = fecha
-        EXEC sp_xml_removedocument @hdoc;
+		EXEC sp_xml_removedocument @hdoc;
 
-        BEGIN TRANSACTION
-        WHILE (SELECT COUNT(*) FROM @tmpValorProp ) > 0
-        BEGIN
-            --Seleccionamos la primera tabla
-            SELECT TOP 1 @numFinca = tmp.NumFinca FROM @tmpValorProp tmp
-            -- Borramos el registro
-            DELETE @tmpValorProp WHERE NumFinca  =  @numFinca        
+		BEGIN TRANSACTION
 
-            UPDATE dbo.Propiedad
-            SET Valor = (SELECT tmp.Valor
-                        FROM @tmpValorProp tmp
-                        WHERE NumFinca = tmp.NumFinca)
-            WHERE NumFinca = (SELECT tmp.NumFinca FROM @tmpValorProp tmp)
-            -- add change to bitacora table triggers
-        END
-        COMMIT
-	end try
-	begin catch
+		WHILE ( SELECT COUNT(*) FROM @tmpValorProp) > 0
+		BEGIN
+			--Seleccionamos la primera tabla
+			SELECT TOP 1 @numFinca = tmp.NumFinca
+			FROM @tmpValorProp tmp
+
+			-- Borramos el registro
+			DELETE @tmpValorProp
+			WHERE NumFinca = @numFinca
+
+			UPDATE dbo.Propiedad
+			SET Valor = (
+					SELECT tmp.Valor
+					FROM @tmpValorProp tmp
+					WHERE NumFinca = tmp.NumFinca
+					)
+			WHERE NumFinca = (
+					SELECT tmp.NumFinca
+					FROM @tmpValorProp tmp
+					)
+				-- add change to bitacora table triggers
+		END
+
+		COMMIT
+	END TRY
+
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK
 
 		DECLARE @errorMsg NVARCHAR(200) = (
 				SELECT ERROR_MESSAGE()
 				)
+
 		PRINT ('ERROR:' + @errorMsg)
 
 		RETURN - 1 * @@ERROR
-	end catch
-end
+	END CATCH
+END
+GO
 
-go
+

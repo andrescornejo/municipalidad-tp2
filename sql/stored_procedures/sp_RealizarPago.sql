@@ -1,6 +1,6 @@
 /*
  * Stored Procedure: csp_PagoAgua
- * Description: 
+ * Description: Realiza el pago de todos los recibos pendientes de una finca
  * Author: Pablo Alpizar
  */
 USE municipalidad

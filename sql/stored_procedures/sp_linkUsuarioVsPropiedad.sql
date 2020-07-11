@@ -2,6 +2,7 @@
  * Stored Procedure: csp_linkUsuarioVsPropiedad
  * Description: 
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO

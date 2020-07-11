@@ -2,6 +2,7 @@
  * Stored Procedure: csp_agregarPropietarios
  * Description: 
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO

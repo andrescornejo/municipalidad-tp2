@@ -20,7 +20,7 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_agregarTransConsumo @fechaInput DATE
+ALTER PROC csp_agregarTransConsumo @inFecha DATE
 AS
 BEGIN
 	BEGIN TRY
@@ -28,7 +28,7 @@ BEGIN
 
 		DECLARE @MontoM3 MONEY
 		DECLARE @OperacionXML XML
-		DECLARE @NuevoAcumulado INT
+		DECLARE @NumFincaRef INT
 
 		SELECT @OperacionXML = O
 		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
@@ -71,28 +71,49 @@ BEGIN
 				NumFinca INT,
 				LecturaM3 INT
 				) AS X
-		WHERE CONVERT(DATE, '2020-04-07') = fecha
+		WHERE @inFecha = fecha
 
 		EXEC sp_xml_removedocument @hdoc;
 
-		INSERT dbo.TransaccionConsumo (
-			idPropiedad,
-			fecha,
-			montoM3,
-			LecturaConsumoM3,
-			NuevoAcumuladoM3,
-			activo,
-			idTipoTransacCons
-			)
-		SELECT P.id,
-			tmp.FechaXml,
-			@MontoM3,
-			tmp.LecturaM3,
-			@NuevoAcumulado,
-			1,
-			idTipoTransConsumo
-		FROM @tmpConsumo tmp
-		INNER JOIN dbo.Propiedad P ON tmp.NumFinca = P.NumFinca
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+		BEGIN TRANSACTION
+
+			INSERT dbo.TransaccionConsumo (
+				idPropiedad,
+				fecha,
+				montoM3,
+				LecturaConsumoM3,
+				NuevoAcumuladoM3,
+				activo,
+				idTipoTransacCons
+				)
+			SELECT P.id,
+				tmp.FechaXml,
+				@MontoM3,
+				tmp.LecturaM3,
+				(CASE WHEN idTipoTransConsumo = 1 THEN tmp.LecturaM3 - P.UltimoConsumoM3
+					ELSE P.ConsumoAcumuladoM3 + tmp.LecturaM3
+				END),
+				1,
+				idTipoTransConsumo
+			FROM @tmpConsumo tmp
+			INNER JOIN dbo.Propiedad P ON tmp.NumFinca = P.NumFinca
+	
+	
+			WHILE (SELECT COUNT(*) FROM @tmpConsumo) > 0
+			BEGIN
+				-- Seleccionamos la primera propiedad
+				SET @NumFincaRef = (SELECT TOP 1 tmp.NumFinca FROM @tmpConsumo tmp)
+				DELETE @tmpConsumo WHERE NumFinca = @NumFincaRef
+	
+				UPDATE [dbo].[Propiedad]
+				SET ConsumoAcumuladoM3 = (SELECT Tc.NuevoAcumuladoM3 
+											FROM [dbo].[TransaccionConsumo] TC
+											INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @NumFincaRef 
+																				AND P.id = TC.id)
+				WHERE NumFinca = @NumFincaRef
+			END
+		COMMIT 
 	END TRY
 
 	BEGIN CATCH

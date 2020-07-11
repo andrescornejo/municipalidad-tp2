@@ -1,7 +1,7 @@
 /*
  * Stored Procedure: csp_getComprobantes
- * Description: 
- * Author: Andres Cornejo
+ * Description: Retorna todos los comprobantes de una propiedad
+ * Author: Pablo Alpizar
  */
 USE municipalidad
 GO
