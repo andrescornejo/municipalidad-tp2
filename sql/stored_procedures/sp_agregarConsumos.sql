@@ -1,7 +1,7 @@
 /*
- * Stored Procedure: 
+ * Stored Procedure: csp_agregarTransConsumo
  * Description: 
- * Author: Andres Cornejo
+ * Author: Pablo Alpizar
  */
 USE municipalidad
 GO
@@ -28,6 +28,7 @@ BEGIN
 
 		DECLARE @MontoM3 MONEY
 		DECLARE @OperacionXML XML
+		DECLARE @NuevoAcumulado INT
 
 		SELECT @OperacionXML = O
 		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
@@ -79,15 +80,15 @@ BEGIN
 			fecha,
 			montoM3,
 			LecturaConsumoM3,
-			NuevoAcumulado,
+			NuevoAcumuladoM3,
 			activo,
-			idTipoTransConsumo
+			idTipoTransacCons
 			)
 		SELECT P.id,
 			tmp.FechaXml,
 			@MontoM3,
 			tmp.LecturaM3,
-			P.ConsumoAcumuladoM3,
+			@NuevoAcumulado,
 			1,
 			idTipoTransConsumo
 		FROM @tmpConsumo tmp

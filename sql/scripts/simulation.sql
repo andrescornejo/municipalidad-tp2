@@ -32,11 +32,11 @@ while(@firstDate <= @lastDate)
         --Execute every day
         exec csp_agregarPropiedades @firstDate
         exec csp_agregarPropietarios @firstDate
-        exec csp_agregarPersonaJuridica @firstDate
-        exec csp_linkPropiedadDelPropietario @firstDate
-        exec csp_linkCCenPropiedad @firstDate
-        exec csp_agregarUsuarios @firstDate
-        exec csp_linkUsuarioVsPropiedad @firstDate
+        --exec csp_agregarPersonaJuridica @firstDate
+        --exec csp_linkPropiedadDelPropietario @firstDate
+        --exec csp_linkCCenPropiedad @firstDate
+        --exec csp_agregarUsuarios @firstDate
+        --exec csp_linkUsuarioVsPropiedad @firstDate
 
         set @firstDate = dateadd(day,1,@firstDate);
     end

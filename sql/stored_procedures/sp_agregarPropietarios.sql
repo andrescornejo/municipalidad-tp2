@@ -24,7 +24,7 @@ BEGIN
 		SET NOCOUNT ON
 
 		DECLARE @OperacionXML XML
-		DECLARE @jsonDepues NVARCHAR(500)
+		DECLARE @jsonDespues NVARCHAR(500)
 		DECLARE @valorDocID INT
 		DECLARE @idEntidad INT
 
@@ -63,7 +63,7 @@ BEGIN
 
 		EXEC sp_xml_removedocument @hdoc;
 
-		-- SELECT * FROM @tmpPropiet
+		--SELECT COUNT(*) FROM @tmpPropiet
 		-- Proceso masivo
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION
@@ -79,24 +79,24 @@ BEGIN
 			tp.valorDocID,
 			1
 		FROM @tmpPropiet tp
-
+		
 		-- insert into bitacora
 
 		WHILE (SELECT COUNT(*) FROM @tmpPropiet) > 0
 		BEGIN
-			SET @valorDocID = (SELECT TOP 1 tmp.valorDocID FROM @tmpPropiet)
-			SET @idEntidad = (SELECT P.id FROM [dbo].[Propietario] P WHERE P.valorDocID = inputDocIDVal)
+			SET @valorDocID = (SELECT TOP 1 tmp.valorDocID FROM @tmpPropiet tmp)
+			SET @idEntidad = (SELECT P.id FROM [dbo].[Propietario] P WHERE P.valorDocID = @valorDocID)
 			DELETE @tmpPropiet WHERE valorDocID = @valorDocID
 
-			SET @jsonDepues = (SELECT 
+			SET @jsonDespues = (SELECT 
 								P.id AS 'ID', 
-								@inputName AS 'Nombre', 
-								@T.nombre AS 'Tipo DocID' , 
-								@inputDocIDVal AS 'Valor ID', 
+								P.nombre AS 'Nombre', 
+								T.nombre AS 'Tipo DocID' , 
+								@valorDocID AS 'Valor ID', 
 								'Activo' AS 'Estado'
 							FROM [dbo].[Propietario] P
-							JOIN [dbo].[idTipoDocID] T ON T.id = @DocidID
-							WHERE P.valorDocID = @inputDocIDVal
+							JOIN [dbo].[TipoDocID] T ON T.id = P.idTipoDocID
+							WHERE P.valorDocID = @valorDocID
 							FOR JSON PATH,ROOT('Propietario'))
 
 			INSERT INTO [dbo].[Bitacora] (

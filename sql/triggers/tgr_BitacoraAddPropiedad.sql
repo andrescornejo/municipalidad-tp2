@@ -16,7 +16,7 @@ BEGIN
     DECLARE @jsonDespues NVARCHAR(500)
     DECLARE @idEntidad INT
 
-    SET @idEntidad = (SELECT P.id FROM INSERTED P)
+    SET @idEntidad = (SELECT P.id FROM inserted P)
 
     SET @jsonDespues = (SELECT 
                             P.NumFinca AS 'Numero Finca',
@@ -25,7 +25,7 @@ BEGIN
                             'Activo' AS 'Estado',
                             P.ConsumoAcumuladoM3 AS 'Consumo Acumuluado M3',
                             P.UltimoConsumoM3 AS 'Consumo Acumulado M3 ultimo recibo'
-                        FROM INSERTED P
+                        FROM inserted P
                         FOR JSON PATH, ROOT('Propiedad'))
     
     INSERT INTO [dbo].[Bitacora] (

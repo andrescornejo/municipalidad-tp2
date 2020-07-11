@@ -18,6 +18,7 @@ BEGIN
 		DECLARE @OperacionXML XML
 		DECLARE @idEntidad INT
 		DECLARE @Admin NVARCHAR(20)
+		DECLARE @username NVARCHAR(100)
 
 		SELECT @OperacionXML = O
 		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
@@ -69,15 +70,18 @@ BEGIN
 
 		WHILE (SELECT COUNT(*) FROM @tmpUsuario) > 0
 		BEGIN
-			
+			SET @username = (SELECT TOP 1 tmp.nombre FROM @tmpUsuario tmp)
+			DELETE @tmpUsuario WHERE nombre = @username
 
-			SET @Admin = (CASE WHEN @inputBit = 1
+			SET @idEntidad = (SELECT U.id FROM [dbo].[Usuario] U WHERE U.username = @username)
+
+			SET @Admin = (CASE WHEN (SELECT U.isAdmin FROM [dbo].[Usuario] U WHERE U.id = @idEntidad) = 1
 							THEN 'Administrador'
 							ELSE 'Cliente'
 						END)
 			SET @jsonDespues = (SELECT
 								@idEntidad AS 'ID',
-								@inputUsername AS 'Nombre Usuario', 
+								@username AS 'Nombre Usuario', 
 								'*******' AS 'Contrasenna', 
 								@Admin AS 'Tipo Usuario', 
 								'Activo' AS 'Estado'

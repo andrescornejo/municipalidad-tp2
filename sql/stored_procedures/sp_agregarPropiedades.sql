@@ -69,12 +69,16 @@ BEGIN
 			NumFinca,
 			Valor,
 			Direccion,
-			activo
+			activo,
+			ConsumoAcumuladoM3,
+			UltimoConsumoM3
 			)
 		SELECT tp.NumFinca,
 			tp.Valor,
 			tp.Direccion,
-			1
+			1,
+			0,
+			0
 		FROM @tmpProp tp
 
 		COMMIT

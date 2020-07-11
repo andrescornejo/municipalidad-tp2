@@ -23,7 +23,8 @@ BEGIN
     SET @Estado = (SELECT CASE WHEN (SELECT P.activo FROM INSERTED P) = 1
                     THEN 'Activo'
                     ELSE 'Inactivo'
-                    END) 
+                    END)
+                    
     SET @jsonAntes = (SELECT 
             P.NumFinca AS 'Numero Finca',
             P.valor AS 'Valor',
