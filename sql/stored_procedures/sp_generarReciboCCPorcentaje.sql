@@ -9,114 +9,126 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_generarReciboCCPorcentaje @inFecha DATE,
-	@inIdCC INT
+ALTER PROC csp_generarReciboCCPorcentaje @inFecha DATE
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
-		DECLARE @Monto MONEY
-		DECLARE @Porcentaje FLOAT
-		DECLARE @idPropiedad INT
-		DECLARE @QDias INT
-		DECLARE @DiaCobro INT = (
-				SELECT C.DiaEmisionRecibo
-				FROM [dbo].[ConceptoCobro] C
-				WHERE C.id = @inIdCC
-				)
+		DECLARE @tmpCCPorcentaje TABLE (id INT)
+		DECLARE @idCC INT
 
-		IF @DiaCobro != (
-				SELECT DAY(@inFecha)
-				)
+		INSERT INTO @tmpCCPorcentaje(id)
+		SELECT CP.id FROM [dbo].[CC_Porcentaje] CP
+
+		WHILE (SELECT COUNT(*) FROM @tmpCCPorcentaje) > 0
 		BEGIN
-			RETURN
-		END
+			-- iteramos por cada concepto cobro porcentual
+			SET @idCC = (SELECT tmp.id FROM @tmpCCPorcentaje tmp)
+			DELETE @tmpCCPorcentaje WHERE id = @idCC
 
-		DECLARE @tmpPropiedadesTipoCC TABLE (
-			idPropiedad INT,
-			valor MONEY
-			)
-		DECLARE @tmpRecibos TABLE (
-			idPropiedad INT,
-			idConceptoCobro INT,
-			Monto MONEY
-			)
-
-		SET @Porcentaje = (
-				SELECT CC.ValorPorcentaje
-				FROM [dbo].[CC_Porcentaje] CC
-				WHERE CC.id = @inIdCC
-				)
-		SET @QDias = (
-				SELECT C.QDiasVencimiento
-				FROM [dbo].[ConceptoCobro] C
-				WHERE C.id = @inIdCC
-				)
-
-		INSERT INTO @tmpPropiedadesTipoCC (
-			idPropiedad,
-			valor
-			)
-		SELECT CP.idPropiedad,
-			P.Valor
-		FROM [dbo].[CCenPropiedad] CP
-		INNER JOIN [dbo].[Propiedad] P ON CP.idPropiedad = P.id
-		WHERE CP.idConceptoCobro = @inIdCC
-
-		WHILE (
-				SELECT COUNT(*)
-				FROM @tmpPropiedadesTipoCC
-				) > 0
-		BEGIN
-			-- seleccionamos la primera propiedad
-			SELECT TOP 1 @idPropiedad = tmp.idPropiedad
-			FROM @tmpPropiedadesTipoCC tmp
-
-			SET @Monto = (
-					(
-						SELECT TOP 1 tmp.valor
-						FROM @tmpPropiedadesTipoCC tmp
-						) * (@Porcentaje / 100)
+			DECLARE @Monto MONEY
+			DECLARE @Porcentaje FLOAT
+			DECLARE @idPropiedad INT
+			DECLARE @QDias INT
+			DECLARE @DiaCobro INT = (
+					SELECT C.DiaEmisionRecibo
+					FROM [dbo].[ConceptoCobro] C
+					WHERE C.id = @idCC
 					)
 
-			-- Quitamos esta propiedad de la tabla
-			DELETE @tmpPropiedadesTipoCC
-			WHERE @idPropiedad = idPropiedad
+			IF @DiaCobro != (
+					SELECT DAY(@inFecha)
+					)
+			BEGIN
+				RETURN
+			END
 
-			INSERT INTO @tmpRecibos (
+			DECLARE @tmpPropiedadesTipoCC TABLE (
+				idPropiedad INT,
+				valor MONEY
+				)
+			DECLARE @tmpRecibos TABLE (
+				idPropiedad INT,
+				idConceptoCobro INT,
+				Monto MONEY
+				)
+
+			SET @Porcentaje = (
+					SELECT CC.ValorPorcentaje
+					FROM [dbo].[CC_Porcentaje] CC
+					WHERE CC.id = @idCC
+					)
+			SET @QDias = (
+					SELECT C.QDiasVencimiento
+					FROM [dbo].[ConceptoCobro] C
+					WHERE C.id = @idCC
+					)
+
+			INSERT INTO @tmpPropiedadesTipoCC (
+				idPropiedad,
+				valor
+				)
+			SELECT CP.idPropiedad,
+				P.Valor
+			FROM [dbo].[CCenPropiedad] CP
+			INNER JOIN [dbo].[Propiedad] P ON CP.idPropiedad = P.id
+			WHERE CP.idConceptoCobro = @idCC
+
+			WHILE (
+					SELECT COUNT(*)
+					FROM @tmpPropiedadesTipoCC
+					) > 0
+			BEGIN
+				-- seleccionamos la primera propiedad
+				SELECT TOP 1 @idPropiedad = tmp.idPropiedad
+				FROM @tmpPropiedadesTipoCC tmp
+
+				SET @Monto = (
+						(
+							SELECT TOP 1 tmp.valor
+							FROM @tmpPropiedadesTipoCC tmp
+							) * (@Porcentaje / 100)
+						)
+
+				-- Quitamos esta propiedad de la tabla
+				DELETE @tmpPropiedadesTipoCC
+				WHERE @idPropiedad = idPropiedad
+
+				INSERT INTO @tmpRecibos (
+					idPropiedad,
+					idConceptoCobro,
+					Monto
+					)
+				SELECT @idPropiedad,
+					@idCC,
+					@Monto
+			END
+
+			SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+			BEGIN TRANSACTION
+
+			INSERT INTO [dbo].[Recibo] (
 				idPropiedad,
 				idConceptoCobro,
-				Monto
+				fecha,
+				fechaVencimiento,
+				monto,
+				esPendiente,
+				activo
 				)
-			SELECT @idPropiedad,
-				@inIdCC,
-				@Monto
+			SELECT tmpR.idPropiedad,
+				tmpR.idConceptoCobro,
+				@inFecha,
+				DATEADD(DAY, @QDias, @inFecha),
+				tmpR.Monto,
+				1,
+				1
+			FROM @tmpRecibos tmpR
+
+			COMMIT
+
 		END
-
-		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-
-		BEGIN TRANSACTION
-
-		INSERT INTO [dbo].[Recibo] (
-			idPropiedad,
-			idConceptoCobro,
-			fecha,
-			fechaVencimiento,
-			monto,
-			esPendiente,
-			activo
-			)
-		SELECT tmp.idPropiedad,
-			tmp.idConceptoCobro,
-			@inFecha,
-			DATEADD(DAY, @QDias, @inFecha),
-			tmp.Monto,
-			1,
-			1
-		FROM @tmpRecibos tmp
-
-		COMMIT
 	END TRY
 
 	BEGIN CATCH

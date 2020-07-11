@@ -39,6 +39,9 @@ while(@firstDate <= @lastDate)
         exec csp_linkUsuarioVsPropiedad @firstDate
         exec csp_agregarCambioValorPropiedad @firstDate 
         exec csp_agregarTransConsumo @firstDate
-        exec csp_agregarPagos @firstDate
+        --exec csp_agregarPagos @firstDate
+        --exec csp_generarReciboCCFijo @firstDate
+        --exec csp_generarReciboCCPorcentaje @firstDate
+        --exec csp_generarRecibosAgua @firstDate
         set @firstDate = dateadd(day,1,@firstDate);
     end

@@ -55,7 +55,7 @@ BEGIN
             NumFinca INT,
             fecha DATE '../@fecha'
         ) AS X
-        WHERE CONVERT(DATE, '2020-03-07') = fecha
+        WHERE @fechaInput = fecha
         ORDER BY NumFinca 
         
         EXEC sp_xml_removedocument @hdoc;

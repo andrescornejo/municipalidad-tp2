@@ -18,7 +18,7 @@ BEGIN
     DECLARE @jsonAntes NVARCHAR(500)
     DECLARE @Estado NVARCHAR(15)
 
-    SET @idEntidad = (SELECT P.id FROM INSERTED)
+    SET @idEntidad = (SELECT P.id FROM inserted P)
 
     SET @Estado = (SELECT CASE WHEN (SELECT P.activo FROM INSERTED P) = 1
                     THEN 'Activo'
