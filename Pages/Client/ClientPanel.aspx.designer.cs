@@ -60,13 +60,31 @@ namespace Muni.Pages.Client
         protected global::System.Web.UI.WebControls.TextBox propidTB;
 
         /// <summary>
-        /// verRecPen1Btn control.
+        /// verRecPenBtn control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button verRecPen1Btn;
+        protected global::System.Web.UI.WebControls.Button verRecPenBtn;
+
+        /// <summary>
+        /// btnVerRecPagados control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnVerRecPagados;
+
+        /// <summary>
+        /// btnVerCompobantes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnVerCompobantes;
 
         /// <summary>
         /// gridView control.

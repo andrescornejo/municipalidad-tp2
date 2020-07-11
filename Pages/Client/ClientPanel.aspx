@@ -32,8 +32,11 @@
             <p class="lead">Por favor ingrese un número de propiedad.</p>
             <asp:TextBox ID="propidTB" runat="server" CssClass="form-control input-sm" TextMode="Number"></asp:TextBox>
             <br/>
-            <asp:Button ID="verRecPen1Btn" runat="server" Text="Ver recibos pendientes" CssClass="btn btn-primary btn-lg" OnClick="verRecPen1Btn_Click"/>
-            
+
+            <asp:Button ID="verRecPenBtn" runat="server" Text="Ver recibos pendientes" CssClass="btn btn-primary btn-lg" OnClick="verRecPenBtn_Click"/>
+            <asp:Button ID="btnVerRecPagados" runat="server" Text="Ver recibos pagados" CssClass="btn btn-primary btn-lg" OnClick="btnVerRecPagados_Click"/>
+            <asp:Button ID="btnVerCompobantes" runat="server" Text="Ver comprobantes de pago" CssClass="btn btn-primary btn-lg" OnClick="btnVerCompobantes_Click"/>
+
             <hr class="my-4"/>
             <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false" OnSelectedIndexChanged = "OnSelectedIndexChanged">
                 <Columns>
@@ -50,7 +53,7 @@
 
     <!-- Modal code -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+        <div class="modal-dialog" role="document">
             <asp:UpdatePanel ID="upModal" runat="server" ChildrenAsTriggers="false" UpdateMode="Conditional">
                 <ContentTemplate>
                     <div class="modal-content">
@@ -62,7 +65,7 @@
                         </div>
                         <div class="modal-body">
                             <asp:Label ID="lblModalBody" runat="server" CssClass="lead" Text=""></asp:Label>
-                            <hr class="my-5"/>
+                            <br class="mb-3"/>
                             <asp:GridView ID="gridModal" runat="server" CssClass="table table-hover table-dark"></asp:GridView>
                         </div>
                         <div class="modal-footer">

@@ -31,13 +31,29 @@ namespace Muni.Pages.Client
             Cliente.CURRENTPROPERTY = propID;
         }
 
-        protected void verRecPen1Btn_Click(object sender, EventArgs e)
+        protected void clearModal()
+        {
+            gridModal.DataSource = null;
+            gridModal.DataBind();
+            lblModalTitle.Text = "";
+            lblModalBody.Text = "";
+        }
+
+        protected void OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Accessing BoundField Column.
+            string name = gridView.SelectedRow.Cells[0].Text;
+
+            this.propidTB.Text = name;
+        }
+        protected void verRecPenBtn_Click(object sender, EventArgs e)
         {
             if (propidTB.Text.Length == 0)
                 return;
 
             string prop = propidTB.Text;
 
+            clearModal();
             setPropID(Convert.ToInt32(prop));
             lblModalTitle.Text = "Recibos pendientes";
             lblModalBody.Text = "Recibos pendientes de la propiedad: " + prop;
@@ -49,12 +65,42 @@ namespace Muni.Pages.Client
             upModal.Update();
         }
 
-        protected void OnSelectedIndexChanged(object sender, EventArgs e)
+        protected void btnVerRecPagados_Click(object sender, EventArgs e)
         {
-            //Accessing BoundField Column.
-            string name = gridView.SelectedRow.Cells[0].Text;
+            if (propidTB.Text.Length == 0)
+                return;
 
-            this.propidTB.Text = name;
+            string prop = propidTB.Text;
+
+            clearModal();
+            setPropID(Convert.ToInt32(prop));
+            lblModalTitle.Text = "Recibos pagados";
+            lblModalBody.Text = "Recibos pagados de la propiedad: " + prop;
+
+            this.gridModal.DataSource = Cliente.getRecibosPagados(Cliente.CURRENTPROPERTY);
+            this.gridModal.DataBind();
+
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myModal", "$('#myModal').modal();", true);
+            upModal.Update();
+        }
+
+        protected void btnVerCompobantes_Click(object sender, EventArgs e)
+        {
+            if (propidTB.Text.Length == 0)
+                return;
+
+            string prop = propidTB.Text;
+
+            clearModal();
+            setPropID(Convert.ToInt32(prop));
+            lblModalTitle.Text = "Recibos pendientes";
+            lblModalBody.Text = "Recibos pendientes de la propiedad: " + prop;
+
+            this.gridModal.DataSource = Cliente.getComprobantes(Cliente.CURRENTPROPERTY);
+            this.gridModal.DataBind();
+
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myModal", "$('#myModal').modal();", true);
+            upModal.Update();
         }
     }
 }

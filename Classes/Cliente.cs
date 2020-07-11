@@ -62,6 +62,37 @@ namespace Muni.Classes
             return datatable;
         }
 
+        public static DataTable getRecibosPagados(int propNum)
+        {
+            SqlConnection connection = Globals.getConnection();
+            DataTable datatable = new DataTable();
+
+            SqlDataAdapter sqlda = new SqlDataAdapter("csp_getRecibosPagados", connection);
+            sqlda.SelectCommand.CommandType = CommandType.StoredProcedure;
+            sqlda.SelectCommand.Parameters.AddWithValue("@inNumFinca", propNum);
+
+            connection.Open();
+            sqlda.Fill(datatable);
+            connection.Close();
+
+            return datatable;
+        }
+
+        public static DataTable getComprobantes(int propNum)
+        {
+            SqlConnection connection = Globals.getConnection();
+            DataTable datatable = new DataTable();
+
+            SqlDataAdapter sqlda = new SqlDataAdapter("csp_getComprobantes", connection);
+            sqlda.SelectCommand.CommandType = CommandType.StoredProcedure;
+            sqlda.SelectCommand.Parameters.AddWithValue("@inNumFinca", propNum);
+
+            connection.Open();
+            sqlda.Fill(datatable);
+            connection.Close();
+
+            return datatable;
+        }
 
         #endregion
     }
