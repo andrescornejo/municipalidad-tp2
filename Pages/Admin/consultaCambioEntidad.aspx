@@ -19,7 +19,7 @@
             <div class="jumbotron">
                 <asp:Label ID="welcomeLbl" CssClass="display-4 mb-4" runat="server" Text="Placeholder text"></asp:Label>
                 <br />
-                <p class="lead">Por favor ingrese un número de propiedad.</p>
+                <p class="lead">Por favor ingrese el tipo de entidad y el rango de fechas.</p>
                 <div class="form-group row px-3 pb-4">
                     <div class="col-cs-2">
                         <p class="lead">Tipo de entidad</p>
@@ -45,18 +45,52 @@
                 <asp:Button ID="verCambiosBtn" runat="server" Text="Ver cambios realizados" CssClass="btn btn-primary btn-lg" OnClick="verCambiosBtn_Click"/>
 
                 <hr class="my-4"/>
-                <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false" OnSelectedIndexChanged = "gridLink_Clicked">
+                <asp:GridView ID="gridTipoEntidad" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false" OnSelectedIndexChanged = "gridLink_Clicked">
                     <Columns>
-                        <asp:BoundField DataField="# Propiedad" HeaderText="# Propiedad" />
-                        <asp:BoundField DataField="Valor" HeaderText="Valor" />
-                        <asp:BoundField DataField="Direccion" HeaderText="Dirección" />
-                        <asp:ButtonField Text="Seleccionar Propiedad" CommandName="Select" ItemStyle-Width="100"/>
+                        <asp:ButtonField Text="Ver información" CommandName="Select" ItemStyle-Width="100"/>
+                        <asp:BoundField DataField="id" HeaderText="id" />
+                        <asp:BoundField DataField="TE" HeaderText="Tipo de entidad" />
+                        <asp:BoundField DataField="inAt" HeaderText="Fecha de cambio" />
+                        <asp:BoundField DataField="inBy" HeaderText="Insertado por" />
+                        <asp:BoundField DataField="inIN" HeaderText="Dirección IP" />
                     </Columns>
                 </asp:GridView>
             </div>
         </div>
 
-
+            <!-- Modal code -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <asp:UpdatePanel ID="upModal" runat="server" ChildrenAsTriggers="false" UpdateMode="Conditional">
+                    <ContentTemplate>
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title"><asp:Label ID="lblModalTitle" runat="server" Text=""></asp:Label></h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div runat="server" id="divJsonAntes" class="pb-4">
+                                    <asp:Label ID="lblJsonAntes" runat="server" CssClass="lead" Text=""></asp:Label>
+                                    <br class="mb-3"/>
+                                    <asp:GridView ID="gridJsonAntes" runat="server" CssClass="table table-hover table-dark"></asp:GridView>
+                                </div>
+                                <div runat="server" id="divJsonDespues">
+                                    <asp:Label ID="lblJsonDespues" runat="server" CssClass="lead" Text=""></asp:Label>
+                                    <br class="mb-3"/>
+                                    <asp:GridView ID="gridJsonDespues" runat="server" CssClass="table table-hover table-dark"></asp:GridView>
+                                </div>
+                                
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-info" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                            </div>
+                        </div>
+                    </ContentTemplate>
+                </asp:UpdatePanel>
+            </div>
+        </div>
         <script src="../../Scripts/bootstrap-datepicker.min.js"></script>
     </form>
 </body>
