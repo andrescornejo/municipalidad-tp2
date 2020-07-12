@@ -52,7 +52,7 @@ BEGIN
 	EXEC csp_agregarTransConsumo @firstDate, @FechasOperacionXML
 	EXEC csp_generarReciboCCFijo @firstDate
 	EXEC csp_generarReciboCCPorcentaje @firstDate
-	--exec csp_generarRecibosAgua @firstDate
+	EXEC csp_generarRecibosAgua @firstDate
 	EXEC csp_agregarPagos @firstDate, @FechasOperacionXML
 	SET @firstDate = dateadd(day, 1, @firstDate);
 END
