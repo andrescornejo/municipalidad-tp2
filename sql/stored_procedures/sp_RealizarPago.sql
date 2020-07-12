@@ -96,6 +96,7 @@ BEGIN
 					1
 				FROM [dbo].[Propiedad] P
 				JOIN [dbo].[ConceptoCobro] CC ON CC.nombre = 'Interes Moratorio'
+				WHERE P.NumFinca = @inNumFinca
 
 				-- incluimos en valor del recibo en el comprobante
 				UPDATE [dbo].[ComprobanteDePago]

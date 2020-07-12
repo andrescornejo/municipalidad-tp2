@@ -50,9 +50,9 @@ BEGIN
 	EXEC csp_linkUsuarioVsPropiedad @firstDate, @FechasOperacionXML
 	EXEC csp_agregarCambioValorPropiedad @firstDate, @FechasOperacionXML 
 	EXEC csp_agregarTransConsumo @firstDate, @FechasOperacionXML
-	--EXEC csp_generarReciboCCFijo @firstDate
+	EXEC csp_generarReciboCCFijo @firstDate
 	--EXEC csp_generarReciboCCPorcentaje @firstDate
 	--exec csp_generarRecibosAgua @firstDate
-	--EXEC csp_agregarPagos @firstDate, @FechasOperacionXML
+	EXEC csp_agregarPagos @firstDate, @FechasOperacionXML
 	SET @firstDate = dateadd(day, 1, @firstDate);
 END

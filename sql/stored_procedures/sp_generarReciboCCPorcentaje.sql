@@ -81,14 +81,14 @@ BEGIN
 					) > 0
 			BEGIN
 				-- seleccionamos la primera propiedad
-				SELECT TOP 1 @idPropiedad = tmp.idPropiedad
-				FROM @tmpPropiedadesTipoCC tmp
+				SET @idPropiedad = (SELECT TOP 1 tmp.idPropiedad
+				FROM @tmpPropiedadesTipoCC tmp ORDER BY tmp.idPropiedad DESC)
 
 				SET @Monto = (
-						(
-							SELECT TOP 1 tmp.valor
-							FROM @tmpPropiedadesTipoCC tmp
-							) * (@Porcentaje / 100)
+						(SELECT tmp.valor
+						FROM @tmpPropiedadesTipoCC tmp
+						WHERE tmp.idPropiedad = @idPropiedad) 
+						* (@Porcentaje / 100)
 						)
 
 				-- Quitamos esta propiedad de la tabla
