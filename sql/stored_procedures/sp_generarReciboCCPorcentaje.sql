@@ -24,7 +24,7 @@ BEGIN
 		WHILE (SELECT COUNT(*) FROM @tmpCCPorcentaje) > 0
 		BEGIN
 			-- iteramos por cada concepto cobro porcentual
-			SET @idCC = (SELECT tmp.id FROM @tmpCCPorcentaje tmp)
+			SET @idCC = (SELECT TOP 1 tmp.id FROM @tmpCCPorcentaje tmp ORDER BY tmp.id DESC)
 			DELETE @tmpCCPorcentaje WHERE id = @idCC
 
 			DECLARE @Monto MONEY
@@ -37,74 +37,72 @@ BEGIN
 					WHERE C.id = @idCC
 					)
 
-			IF @DiaCobro != (
+			IF @DiaCobro = (
 					SELECT DAY(@inFecha)
 					)
 			BEGIN
-				RETURN
-			END
 
-			DECLARE @tmpPropiedadesTipoCC TABLE (
-				idPropiedad INT,
-				valor MONEY
-				)
-			DECLARE @tmpRecibos TABLE (
-				idPropiedad INT,
-				idConceptoCobro INT,
-				Monto MONEY
-				)
-
-			SET @Porcentaje = (
-					SELECT CC.ValorPorcentaje
-					FROM [dbo].[CC_Porcentaje] CC
-					WHERE CC.id = @idCC
+				DECLARE @tmpPropiedadesTipoCC TABLE (
+					idPropiedad INT,
+					valor MONEY
 					)
-			SET @QDias = (
-					SELECT C.QDiasVencimiento
-					FROM [dbo].[ConceptoCobro] C
-					WHERE C.id = @idCC
+				DECLARE @tmpRecibos TABLE (
+					idPropiedad INT,
+					idConceptoCobro INT,
+					Monto MONEY
 					)
 
-			INSERT INTO @tmpPropiedadesTipoCC (
-				idPropiedad,
-				valor
-				)
-			SELECT CP.idPropiedad,
-				P.Valor
-			FROM [dbo].[CCenPropiedad] CP
-			INNER JOIN [dbo].[Propiedad] P ON CP.idPropiedad = P.id
-			WHERE CP.idConceptoCobro = @idCC
-
-			WHILE (
-					SELECT COUNT(*)
-					FROM @tmpPropiedadesTipoCC
-					) > 0
-			BEGIN
-				-- seleccionamos la primera propiedad
-				SET @idPropiedad = (SELECT TOP 1 tmp.idPropiedad
-				FROM @tmpPropiedadesTipoCC tmp ORDER BY tmp.idPropiedad DESC)
-
-				SET @Monto = (
-						(SELECT tmp.valor
-						FROM @tmpPropiedadesTipoCC tmp
-						WHERE tmp.idPropiedad = @idPropiedad) 
-						* (@Porcentaje / 100)
+				SET @Porcentaje = (
+						SELECT CC.ValorPorcentaje
+						FROM [dbo].[CC_Porcentaje] CC
+						WHERE CC.id = @idCC
+						)
+				SET @QDias = (
+						SELECT C.QDiasVencimiento
+						FROM [dbo].[ConceptoCobro] C
+						WHERE C.id = @idCC
 						)
 
-				-- Quitamos esta propiedad de la tabla
-				DELETE @tmpPropiedadesTipoCC
-				WHERE @idPropiedad = idPropiedad
-
-				INSERT INTO @tmpRecibos (
+				INSERT INTO @tmpPropiedadesTipoCC (
 					idPropiedad,
-					idConceptoCobro,
-					Monto
+					valor
 					)
-				SELECT @idPropiedad,
-					@idCC,
-					@Monto
-			END
+				SELECT CP.idPropiedad,
+					P.Valor
+				FROM [dbo].[CCenPropiedad] CP
+				INNER JOIN [dbo].[Propiedad] P ON CP.idPropiedad = P.id
+				WHERE CP.idConceptoCobro = @idCC
 
+				WHILE (
+						SELECT COUNT(*)
+						FROM @tmpPropiedadesTipoCC
+						) > 0
+				BEGIN
+					-- seleccionamos la primera propiedad
+					SET @idPropiedad = (SELECT TOP 1 tmp.idPropiedad
+					FROM @tmpPropiedadesTipoCC tmp ORDER BY tmp.idPropiedad DESC)
+
+					SET @Monto = (
+							(SELECT tmp.valor
+							FROM @tmpPropiedadesTipoCC tmp
+							WHERE tmp.idPropiedad = @idPropiedad) 
+							* (@Porcentaje / 100)
+							)
+
+					-- Quitamos esta propiedad de la tabla
+					DELETE @tmpPropiedadesTipoCC
+					WHERE @idPropiedad = idPropiedad
+
+					INSERT INTO @tmpRecibos (
+						idPropiedad,
+						idConceptoCobro,
+						Monto
+						)
+					SELECT @idPropiedad,
+						@idCC,	
+						@Monto
+				END
+			END
 			SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 			BEGIN TRANSACTION
 
@@ -127,7 +125,7 @@ BEGIN
 			FROM @tmpRecibos tmpR
 
 			COMMIT
-
+			RETURN 1
 		END
 	END TRY
 
