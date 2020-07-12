@@ -18,7 +18,8 @@ BEGIN
     DECLARE @jsonAntes NVARCHAR(500)
     DECLARE @Estado NVARCHAR(15)
 
-    SET @idEntidad = (SELECT P.id FROM inserted P)
+    -- Cuando se actualiza el registro queda en inserted y deleted
+    SET @idEntidad = (SELECT TOP 1 P.id FROM inserted P INNER JOIN DELETED D ON P.id = D.id ORDER BY P.id DESC)
 
     SET @Estado = (SELECT CASE WHEN (SELECT P.activo FROM INSERTED P) = 1
                     THEN 'Activo'
@@ -26,13 +27,13 @@ BEGIN
                     END)
                     
     SET @jsonAntes = (SELECT 
-            P.NumFinca AS 'Numero Finca',
-            P.valor AS 'Valor',
-            P.Direccion AS 'Direccion',
+            D.NumFinca AS 'Numero Finca',
+            D.valor AS 'Valor',
+            D.Direccion AS 'Direccion',
             @Estado AS 'Estado',
-            P.ConsumoAcumuladoM3 AS 'Consumo Acumuluado M3',
-            P.UltimoConsumoM3 AS 'Consumo Acumulado M3 ultimo recibo'
-        FROM INSERTED P
+            D.ConsumoAcumuladoM3 AS 'Consumo Acumuluado M3',
+            D.UltimoConsumoM3 AS 'Consumo Acumulado M3 ultimo recibo'
+        FROM DELETED D ORDER BY D.id DESC
         FOR JSON PATH, ROOT('Propiedad'))
 
     SET @jsonDespues = (SELECT 
@@ -42,7 +43,7 @@ BEGIN
             @Estado AS 'Estado',
             P.ConsumoAcumuladoM3 AS 'Consumo Acumuluado M3',
             P.UltimoConsumoM3 AS 'Consumo Acumulado M3 ultimo recibo'
-        FROM INSERTED P
+        FROM INSERTED P ORDER BY P.id DESC
         FOR JSON PATH, ROOT('Propiedad'))
     
     INSERT INTO [dbo].[Bitacora] (

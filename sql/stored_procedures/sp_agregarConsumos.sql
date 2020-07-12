@@ -98,14 +98,14 @@ BEGIN
 			WHILE (SELECT COUNT(*) FROM @tmpConsumo) > 0
 			BEGIN
 				-- Seleccionamos la primera propiedad
-				SET @NumFincaRef = (SELECT TOP 1 tmp.NumFinca FROM @tmpConsumo tmp)
+				SET @NumFincaRef = (SELECT TOP 1 tmp.NumFinca FROM @tmpConsumo tmp ORDER BY tmp.NumFinca DESC)
 				DELETE @tmpConsumo WHERE NumFinca = @NumFincaRef
 	
 				UPDATE [dbo].[Propiedad]
 				SET ConsumoAcumuladoM3 = (SELECT Tc.NuevoAcumuladoM3 
 											FROM [dbo].[TransaccionConsumo] TC
 											INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @NumFincaRef 
-																				AND P.id = TC.id)
+											WHERE TC.idPropiedad = P.id)
 				WHERE NumFinca = @NumFincaRef
 			END
 		COMMIT 

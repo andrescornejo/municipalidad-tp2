@@ -45,24 +45,21 @@ BEGIN
 		WHILE ( SELECT COUNT(*) FROM @tmpValorProp) > 0
 		BEGIN
 			--Seleccionamos la primera tabla
-			SELECT TOP 1 @numFinca = tmp.NumFinca
-			FROM @tmpValorProp tmp
-
-			-- Borramos el registro
-			DELETE @tmpValorProp
-			WHERE NumFinca = @numFinca
+			SET  @numFinca = (SELECT TOP 1 tmp.NumFinca
+			FROM @tmpValorProp tmp ORDER BY tmp.NumFinca DESC)
 
 			UPDATE dbo.Propiedad
 			SET Valor = (
 					SELECT tmp.Valor
 					FROM @tmpValorProp tmp
-					WHERE NumFinca = tmp.NumFinca
+					WHERE @numFinca = tmp.NumFinca
 					)
-			WHERE NumFinca = (
-					SELECT tmp.NumFinca
-					FROM @tmpValorProp tmp
-					)
+			WHERE NumFinca = @numFinca
 				-- add change to bitacora table triggers
+
+			-- Borramos el registro
+			DELETE @tmpValorProp
+			WHERE NumFinca = @numFinca
 		END
 
 		COMMIT

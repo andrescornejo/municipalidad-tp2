@@ -24,6 +24,7 @@ BEGIN
 		SET NOCOUNT ON
 
 		DECLARE @hdoc INT
+		DECLARE @PropiedadRef INT
 
 		EXEC sp_xml_preparedocument @hdoc OUT,
 			@OperacionXML
@@ -57,25 +58,31 @@ BEGIN
 		--select * from @tmpProp
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-
 		BEGIN TRANSACTION
 
-		INSERT dbo.Propiedad (
-			NumFinca,
-			Valor,
-			Direccion,
-			activo,
-			ConsumoAcumuladoM3,
-			UltimoConsumoM3
-			)
-		SELECT tp.NumFinca,
-			tp.Valor,
-			tp.Direccion,
-			1,
-			0,
-			0
-		FROM @tmpProp tp
+		WHILE (SELECT COUNT(*) FROM @tmpProp) > 0
+		BEGIN
+			SET @PropiedadRef = (SELECT TOP 1 tmp.NumFinca FROM @tmpProp tmp)
 
+			INSERT dbo.Propiedad (
+				NumFinca,
+				Valor,
+				Direccion,
+				activo,
+				ConsumoAcumuladoM3,
+				UltimoConsumoM3
+				)
+			SELECT tp.NumFinca,
+				tp.Valor,
+				tp.Direccion,
+				1,
+				0,
+				0
+			FROM @tmpProp tp
+			WHERE tp.NumFinca = @PropiedadRef
+
+			DELETE @tmpProp WHERE NumFinca = @PropiedadRef
+		END
 		COMMIT
 
 		RETURN 1
