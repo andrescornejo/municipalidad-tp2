@@ -3,6 +3,9 @@
 <link href="../../Content/bootstrap.css" rel="stylesheet" />
 <link href="../../Content/dashboard.css" rel="stylesheet" />
 
+
+<asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+
 <div class="container">
   <nav class="navbar navbar-dark bg-dark fixed-top flex-md-nowrap p-2 shadow">
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Panel de administrador</a>
