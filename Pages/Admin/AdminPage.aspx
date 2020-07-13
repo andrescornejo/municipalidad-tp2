@@ -1,5 +1,8 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AdminPage.aspx.cs" Inherits="Muni.Pages.AdminPage" %>
 
+<%@ Register Src="~/Pages/Admin/AdminPanelUC.ascx" TagPrefix="uc1" TagName="AdminPanelUC" %>
+
+
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -9,9 +12,7 @@
 </head>
 <body style="background-color:#2c3d63">
     <form id="AdminPage" runat="server">
-        <div>
-            <asp:Button ID="logoutBtn" runat="server" Text="Logout" Width="150px" BorderWidth="0px" Font-Bold="True" Font-Names="Bahnschrift" Font-Size="40px" ForeColor="White" style="margin-top:5px ;background-color:#ff6f5e" OnClick="logoutBtn_Click" Height="53px"/>
-        </div>
+        <uc1:AdminPanelUC runat="server" ID="AdminPanelUC" />
         <div style="text-align:center">
             <asp:Label ID="welcomeLbl" runat="server" Font-Names="Bahnschrift" Font-Size="70px" ForeColor="White" Text="Panel de administrador"></asp:Label>
             <br />
@@ -29,6 +30,8 @@
             <asp:Button ID="verPropiedadesDeUsuario" runat="server" Text="Propiedades que puede ver un usuario" Width="700px" BorderWidth="0px" Font-Bold="True" Font-Names="Bahnschrift" Font-Size="40px" ForeColor="White" style="margin-top:30px ;background-color:#ff6f5e" OnClick="verPropiedadesDeUsuarioBtn_Click"/>
             <br />
             <asp:Button ID="verServiciosBtn" runat="server" Text="Ver usuario de una propiedad" Width="700px" BorderWidth="0px" Font-Bold="True" Font-Names="Bahnschrift" Font-Size="40px" ForeColor="White" style="margin-top:30px ;background-color:#ff6f5e" OnClick="verServiciosBtn_Click"/>
+            <br />
+            <asp:Button ID="btnCambioEntidad" runat="server" Text="Ver cambios a entidades" Width="700px" BorderWidth="0px" Font-Bold="True" Font-Names="Bahnschrift" Font-Size="40px" ForeColor="White" style="margin-top:30px ;background-color:#ff6f5e" OnClick="cambioEntidadBtn_Click"/>
         </div>
     </form>
 </body>

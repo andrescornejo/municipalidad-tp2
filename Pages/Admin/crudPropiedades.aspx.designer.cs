@@ -7,12 +7,21 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Muni.Pages
+namespace Muni.Pages.Admin
 {
 
 
-    public partial class AdminPage
+    public partial class crudPropiedades
     {
+
+        /// <summary>
+        /// crudPropiedadesForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlForm crudPropiedadesForm;
 
         /// <summary>
         /// AdminPanelUC control.
@@ -24,75 +33,75 @@ namespace Muni.Pages
         protected global::Muni.Pages.Admin.AdminPanelUC AdminPanelUC;
 
         /// <summary>
-        /// welcomeLbl control.
+        /// tb_CnumProp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label welcomeLbl;
+        protected global::System.Web.UI.WebControls.TextBox tb_CnumProp;
 
         /// <summary>
-        /// userLbl control.
+        /// tb_Cvalor control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label userLbl;
+        protected global::System.Web.UI.WebControls.TextBox tb_Cvalor;
 
         /// <summary>
-        /// crudTablesBtn control.
+        /// tb_Cdir control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button crudTablesBtn;
+        protected global::System.Web.UI.WebControls.TextBox tb_Cdir;
 
         /// <summary>
-        /// verPropiedadesDePropietarioBtn control.
+        /// btnCreateProp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button verPropiedadesDePropietarioBtn;
+        protected global::System.Web.UI.WebControls.Button btnCreateProp;
 
         /// <summary>
-        /// verPropietarioDePropiedadBtn control.
+        /// lblDelProp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button verPropietarioDePropiedadBtn;
+        protected global::System.Web.UI.WebControls.Label lblDelProp;
 
         /// <summary>
-        /// verPropiedadesDeUsuario control.
+        /// btnDeleteProp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button verPropiedadesDeUsuario;
+        protected global::System.Web.UI.WebControls.Button btnDeleteProp;
 
         /// <summary>
-        /// verServiciosBtn control.
+        /// gridProp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button verServiciosBtn;
+        protected global::System.Web.UI.WebControls.GridView gridProp;
 
         /// <summary>
-        /// btnCambioEntidad control.
+        /// currentUseCase control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCambioEntidad;
+        protected global::System.Web.UI.WebControls.HiddenField currentUseCase;
     }
 }

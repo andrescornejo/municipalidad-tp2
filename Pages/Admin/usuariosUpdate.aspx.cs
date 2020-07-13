@@ -22,7 +22,7 @@ namespace Muni.Pages
             Response.Redirect("usuariosCRUD.aspx?username=" + usernameGot);
         }
 
-        protected void updatePropietarioBtn_Click(object sender, EventArgs e)
+        protected void updateUsuarioBtn_Click(object sender, EventArgs e)
         {
             string OLDUsername = textBoxOLDUsername.Text;
             string NEWUsername = textBoxNewName.Text;
@@ -31,16 +31,21 @@ namespace Muni.Pages
 
             if (OLDUsername.Length != 0 && NEWUsername.Length != 0 && NEWPassword.Length != 0)
             {
-                Globals.updateUsuario(OLDUsername, NEWUsername, NEWPassword, isAdmin);
-                this.textBoxOLDUsername.Text = "";
-                this.textBoxNewName.Text = "";
-                this.textBoxNewPassword.Text = "";
+                AdminWeb.updateUsuario(OLDUsername, NEWUsername, NEWPassword, isAdmin, Globals.CURRENTUSER, Globals.CURRENTIP);
+                clearTextBoxes();
                 this.gridView.DataSource = Globals.getUsuarios();
                 this.gridView.DataBind();
                 MessageBox.Show("Usuario actualizado: " + NEWUsername);
             }
             else
                 MessageBox.Show("Error en las entradas");
+        }
+
+        protected void clearTextBoxes()
+        {
+            this.textBoxOLDUsername.Text = "";
+            this.textBoxNewName.Text = "";
+            this.textBoxNewPassword.Text = "";
         }
     }
 }

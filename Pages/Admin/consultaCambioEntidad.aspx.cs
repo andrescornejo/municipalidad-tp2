@@ -60,21 +60,28 @@ namespace Muni.Pages.Admin
             clearModal();
             //Setting up the labels and the gridviews for the modal.
             this.lblModalTitle.Text = "Cambio a entidad tipo: " + modalTitle + ".";
-            //Since jsonAntes can be nullable by database design, it has to be non-null to be displayed.
+            //Getting the data tables from the json.
             DataTable dataTableAntes = DerializeDataTable(jsonAntes);
+            DataTable dataTableDespues = DerializeDataTable(jsonDespues);
+
             if (dataTableAntes != null)
             {
-                divJsonAntes.Visible = true;
                 this.lblJsonAntes.Text = "Entidad antes:";
                 this.gridJsonAntes.DataSource = dataTableAntes;
                 this.gridJsonAntes.DataBind();
             }
             else
-                divJsonAntes.Visible = false;
-            DataTable dataTableDespues = DerializeDataTable(jsonDespues);
-            this.lblJsonDespues.Text = "Entidad despues:";
-            this.gridJsonDespues.DataSource = dataTableDespues;
-            this.gridJsonDespues.DataBind();
+                this.lblJsonAntes.Text = "Entidad creada"; //divJsonAntes.Visible = false;
+            if (dataTableDespues != null)
+            {
+                this.lblJsonDespues.Text = "Entidad despues:";
+                this.gridJsonDespues.DataSource = dataTableDespues;
+                this.gridJsonDespues.DataBind();
+            }
+            else
+                this.lblJsonDespues.Text = "Entidad borrada";
+                
+
         }
 
         public DataTable DerializeDataTable(string json)
@@ -92,6 +99,7 @@ namespace Muni.Pages.Admin
 
         protected void clearGridTipoEntidad()
         {
+            this.gridTipoEntidad.Columns[1].Visible = true;
             gridTipoEntidad.DataSource = null;
             gridTipoEntidad.DataBind();
         }

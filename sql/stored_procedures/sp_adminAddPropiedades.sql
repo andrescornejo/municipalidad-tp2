@@ -12,12 +12,27 @@ CREATE
 
 ALTER PROC csp_adminAddPropiedades @inputNumFinca INT,
 	@inputValorFinca MONEY,
-	@inputDir NVARCHAR(max)
+	@inputDir NVARCHAR(max),
+	@inputInsertedBy NVARCHAR(100),
+	@inputInsertedIn NVARCHAR(20)
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+
+		DECLARE @jsonDespues NVARCHAR(500)
+
+		SET @jsonDespues = (
+				SELECT @inputNumFinca AS 'Número de propiedad',
+					@inputValorFinca AS 'Valor monetario',
+					@inputDir AS 'Dirección',
+					0 AS 'Consumo acumulado m3',
+					0 AS 'Ultimo consumo m3',
+					'Activo' AS 'Estado'
+				FOR JSON PATH,
+					ROOT('Propiedad')
+				)
 
 		BEGIN TRANSACTION
 
@@ -35,6 +50,28 @@ BEGIN
 			1,
 			0,
 			0
+
+		INSERT Bitacora (
+			idTipoEntidad,
+			idEntidad,
+			jsonAntes,
+			jsonDespues,
+			insertedAt,
+			insertedBy,
+			insertedIn
+			)
+		SELECT t.id,
+			(
+				SELECT SCOPE_IDENTITY()
+				),
+			NULL,
+			@jsonDespues,
+			GETDATE(),
+			@inputInsertedBy,
+			@inputInsertedIn
+		FROM dbo.TipoEntidad T
+		WHERE T.Nombre = 'Propiedad'
+
 		COMMIT
 
 		RETURN 1

@@ -48,6 +48,108 @@ namespace Muni.Classes
             return spOutput;
         }
 
+        #region CRUD
+        public static void updatePropietario(string OldDocIDVal, string name, string docID, string docIDVal, string user, string ip)
+        {
+            SqlConnection connection = Globals.getConnection();
+            SqlCommand cmd = new SqlCommand("csp_adminUpdatePropietario", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@inputOLDDocID", OldDocIDVal);
+            cmd.Parameters.AddWithValue("@inputName", name);
+            cmd.Parameters.AddWithValue("@inputDocIDVal", docID);
+            cmd.Parameters.AddWithValue("@inputDocID", docIDVal);
+            cmd.Parameters.AddWithValue("@inputInsertedBy", user);
+            cmd.Parameters.AddWithValue("@inputInsertedIn", ip);
+
+            connection.Open();
+            int rowAffected = cmd.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        public static void updateUsuario(string OldUsername, string username, string password, bool isAdmin, string user, string ip)
+        {
+            SqlConnection connection = Globals.getConnection();
+            SqlCommand cmd = new SqlCommand("csp_adminUpdateUsuario", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@inputOLDUsername", OldUsername);
+            cmd.Parameters.AddWithValue("@inputNewUsername", username);
+            cmd.Parameters.AddWithValue("@inputNewPassword", password);
+            cmd.Parameters.AddWithValue("@inputAdminStatus", isAdmin);
+            cmd.Parameters.AddWithValue("@inputInsertedBy", user);
+            cmd.Parameters.AddWithValue("@inputInsertedIn", ip);
+
+            connection.Open();
+            int rowAffected = cmd.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        #endregion
+
+        #endregion
+
+        #region CRUD
+
+        #region CreateTables
+
+        public static void createPropiedad(int numFinca, int valor, string dir, string user, string ip)
+        {
+            SqlConnection connection = Globals.getConnection();
+            SqlCommand cmd = new SqlCommand("csp_adminAddPropiedades", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@inputNumFinca", numFinca);
+            cmd.Parameters.AddWithValue("@inputValorFinca", valor);
+            cmd.Parameters.AddWithValue("@inputDir", dir);
+            cmd.Parameters.AddWithValue("@inputInsertedBy", user);
+            cmd.Parameters.AddWithValue("@inputInsertedIn", ip);
+
+            connection.Open();
+            cmd.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        #endregion
+
+        #region ReadTables
+
+        public static DataTable getPropiedades()
+        {
+            SqlConnection connection = Globals.getConnection();
+
+            DataTable datatable = new DataTable();
+            SqlDataAdapter sqlda = new SqlDataAdapter("csp_getPropiedades", connection);
+            sqlda.SelectCommand.CommandType = CommandType.StoredProcedure;
+
+            connection.Open();
+            sqlda.Fill(datatable);
+            connection.Close();
+
+            return datatable;
+        }
+
+        #endregion
+
+        #region DeleteTables
+
+        public static void deletePropiedad(int numFinca, string user, string ip)
+        {
+            SqlConnection connection = Globals.getConnection();
+            SqlCommand cmd = new SqlCommand("csp_adminDeletePropiedad", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@inputNumFinca", numFinca);
+            cmd.Parameters.AddWithValue("@inputInsertedBy", user);
+            cmd.Parameters.AddWithValue("@inputInsertedIn", ip);
+
+            connection.Open();
+            cmd.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        #endregion
+
         #endregion
     }
 }

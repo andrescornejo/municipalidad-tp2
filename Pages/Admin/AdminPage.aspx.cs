@@ -50,5 +50,10 @@ namespace Muni.Pages
         {
             Response.Redirect("verUsuarioDePropiedad.aspx");
         }
+
+        protected void cambioEntidadBtn_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("consultaCambioEntidad.aspx");
+        }
     }
 }

@@ -34,7 +34,7 @@
             <br/>
             <br/>
             <br/>
-            <asp:Button ID="updateUsuarioBtn" runat="server" Text="Actualizar usuario" Width="500px" BorderWidth="0px" Font-Bold="True" Font-Names="Bahnschrift" Font-Size="40px" ForeColor="White" style="margin-top:10px ;background-color:#addcca" OnClick="updatePropietarioBtn_Click"/>
+            <asp:Button ID="updateUsuarioBtn" runat="server" Text="Actualizar usuario" Width="500px" BorderWidth="0px" Font-Bold="True" Font-Names="Bahnschrift" Font-Size="40px" ForeColor="White" style="margin-top:10px ;background-color:#addcca" OnClick="updateUsuarioBtn_Click"/>
             <br/>
             <br/>
             <br/>

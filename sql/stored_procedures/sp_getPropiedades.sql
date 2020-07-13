@@ -12,9 +12,11 @@ CREATE
 ALTER PROC csp_getPropiedades
 AS
 BEGIN
-	SELECT P.numFinca AS [Identificacion],
-		P.valor AS [Valor],
-		P.Direccion AS [Direccion]
+	SELECT P.numFinca AS [numFin],
+		P.valor AS [val],
+		P.Direccion AS [dir],
+		P.ConsumoAcumuladoM3 as [cAm3],
+		P.UltimoConsumoM3 as [uCm3]
 	FROM Propiedad P
 	WHERE P.activo = 1
 END

@@ -12,7 +12,7 @@ namespace Muni.Pages.Admin
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            this.lblUsername.Text = "Administrador: " + Globals.CURRENTUSER;
         }
 
         protected void logoutBtn_Click(object sender, EventArgs e)

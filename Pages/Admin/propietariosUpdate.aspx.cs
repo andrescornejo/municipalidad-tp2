@@ -13,7 +13,6 @@ namespace Muni.Pages
         string usernameGot;
         protected void Page_Load(object sender, EventArgs e)
         {
-            usernameGot = Request.QueryString["username"];
             this.gridView.DataSource = Globals.getPropietarios();
             this.gridView.DataBind();
         }
@@ -30,16 +29,21 @@ namespace Muni.Pages
 
             if (OLDDocID.Length != 0 && newName.Length != 0 && newDocID.Length != 0)
             {
-                Globals.updatePropietario(OLDDocID, newName, newDocID, docIDVal);
-                this.textBoxOLDID.Text = "";
-                this.textBoxNameInput.Text = "";
-                this.textBoxDocIDInput.Text = "";
+                AdminWeb.updatePropietario(OLDDocID, newName, newDocID, docIDVal, Globals.CURRENTUSER, Globals.CURRENTIP);
+                clearTextBoxes();
                 this.gridView.DataSource = Globals.getPropietarios();
                 this.gridView.DataBind();
                 MessageBox.Show("Propietario actualizado: " + newName);
             }
             else
                 MessageBox.Show("Error en las entradas");
+        }
+
+        protected void clearTextBoxes()
+        {
+            this.textBoxOLDID.Text = "";
+            this.textBoxNameInput.Text = "";
+            this.textBoxDocIDInput.Text = "";
         }
     }
 }

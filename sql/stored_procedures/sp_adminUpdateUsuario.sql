@@ -23,26 +23,50 @@ BEGIN
 		DECLARE @idUser INT
 		DECLARE @jsonAntes NVARCHAR(500)
 		DECLARE @jsonDespues NVARCHAR(500)
-		DECLARE @Admin INT
+		DECLARE @adminBefore NVARCHAR(500)
+		DECLARE @adminAfter NVARCHAR(500)
 		DECLARE @idEntidad INT
+		DECLARE @oldAdminStatus BIT
 
-		EXEC @idUser = csp_getUserIDFromUsername @inputOLDUsername
-		
-		SET @idEntidad = (SELECT U.id FROM [dbo].[Usuario] U WHERE U.username = @inputOLDUsername)
-		
-		SET @Admin = (CASE WHEN @inputAdminStatus = 1
+		EXEC csp_getUserIDFromUsername @inputOLDUsername,
+			@idUser OUTPUT
+
+		PRINT (@idUser)
+
+		SET @idEntidad = (
+				SELECT U.id
+				FROM [dbo].[Usuario] U
+				WHERE U.username = @inputOLDUsername
+				)
+		SET @oldAdminStatus = (
+				SELECT u.isAdmin
+				FROM Usuario u
+				WHERE u.id = @idEntidad
+				)
+		SET @adminBefore = (
+				CASE 
+					WHEN @oldAdminStatus = 1
 						THEN 'Administrador'
-						ELSE 'Cliente'
-					END)
-		
-		SET @jsonAntes = (SELECT
-							@idEntidad AS 'ID',
-							@inputOLDUsername AS 'Nombre Usuario', 
-							'*******' AS 'Contrasenna', 
-							@Admin AS 'Tipo Usuario', 
-							'Activo' AS 'Estado'
-						FOR JSON PATH, ROOT('Usuario'))
+					ELSE 'Cliente'
+					END
+				)
+		SET @adminAfter = (
+				CASE 
+					WHEN @inputAdminStatus = 1
+						THEN 'Administrador'
+					ELSE 'Cliente'
+					END
+				)
+		SET @jsonAntes = (
+				SELECT @inputOLDUsername AS 'Nombre Usuario',
+					'*******' AS 'Contraseña',
+					@adminBefore AS 'Tipo Usuario',
+					'Activo' AS 'Estado'
+				FOR JSON PATH,
+					ROOT('Usuario')
+				)
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+
 		BEGIN TRANSACTION
 
 		UPDATE Usuario
@@ -53,25 +77,25 @@ BEGIN
 			AND activo = 1
 
 		-- inset into bitacora
+		SET @jsonDespues = (
+				SELECT @inputNewUsername AS 'Nombre Usuario',
+					'*******' AS 'Contraseña',
+					@adminAfter AS 'Tipo Usuario',
+					'Activo' AS 'Estado'
+				FOR JSON PATH,
+					ROOT('Usuario')
+				)
 
-		SET @jsonDespues = (SELECT
-								@idEntidad AS 'ID',
-								@inputNewUsername AS 'Nombre Usuario', 
-								'*******' AS 'Contrasenna', 
-								@Admin AS 'Tipo Usuario', 
-								'Activo' AS 'Estado'
-							FOR JSON PATH, ROOT('Usuario'))
- 
 		INSERT INTO [dbo].[Bitacora] (
 			idTipoEntidad,
 			idEntidad,
-			jsonAntes, 
+			jsonAntes,
 			jsonDespues,
 			insertedAt,
 			insertedBy,
 			insertedIn
-		) SELECT
-			T.id,
+			)
+		SELECT T.id,
 			@idUser,
 			@jsonAntes,
 			@jsonDespues,
@@ -79,9 +103,10 @@ BEGIN
 			@inputInsertedBy,
 			@inputInsertedIn
 		FROM [dbo].[TipoEntidad] T
-		JOIN [dbo].[Usuario] U ON @inputNewUsername = U.username AND U.activo = 1 
+		JOIN [dbo].[Usuario] U ON @inputNewUsername = U.username
+			AND U.activo = 1
 		WHERE T.Nombre = 'Usuario'
-		
+
 		COMMIT
 
 		RETURN 1
@@ -102,4 +127,4 @@ BEGIN
 END
 GO
 
---EXEC csp_adminUpdateUsuario 'jpfeng', 'fengJP', 'yeet', 0;
+-- EXEC csp_adminUpdateUsuario 'lol', 'fengJP', 'yeet', 0, 'lskdjf', 'asldkfj';

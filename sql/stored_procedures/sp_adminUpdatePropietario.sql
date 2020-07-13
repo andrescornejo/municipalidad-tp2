@@ -21,6 +21,7 @@ BEGIN
 		SET NOCOUNT ON
 
 		DECLARE @idPropietario INT
+		DECLARE @tmpJson NVARCHAR(500)
 		DECLARE @jsonAntes NVARCHAR(500)
 		DECLARE @jsonDespues NVARCHAR(500)
 
@@ -29,49 +30,53 @@ BEGIN
 		DECLARE @DocidID INT
 
 		EXEC @DocidID = csp_getDocidIDFromName @inputDocID
-		
-		SET @jsonAntes = (SELECT 
-							P.id AS 'ID', 
-							@inputName AS 'Nombre', 
-							T.nombre AS 'Tipo DocID' , 
-							@inputDocIDVal AS 'Valor ID', 
-							'Activo' AS 'Estado'
-							FROM [dbo].[Propietario] P
-							JOIN [dbo].[TipoDocID] T ON T.id = @DocidID
-							WHERE P.valorDocID = @inputDocIDVal
-							FOR JSON PATH, ROOT('Propietario'))
 
+		SET @tmpJson = (
+				SELECT P.nombre AS 'Nombre',
+					T.nombre AS 'Tipo DocID',
+					P.valorDocID AS 'Valor ID',
+					'Activo' AS 'Estado'
+				FROM [dbo].[Propietario] P
+				JOIN [dbo].[TipoDocID] T ON T.id = P.idTipoDocID
+				WHERE P.id = @idPropietario
+				FOR JSON PATH,
+					ROOT('Propietario')
+				)
+		SET @jsonAntes = @tmpJson
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+
 		BEGIN TRANSACTION
 
 		UPDATE Propietario
 		SET nombre = @inputName,
 			valorDocID = @inputDocIDVal,
 			idTipoDocID = @DocidID
-		WHERE valorDocID = @inputOLDDocID and activo = 1
+		WHERE valorDocID = @inputOLDDocID
+			AND activo = 1
 
 		-- insert change into bitacora
-		SET @jsonDespues = (SELECT 
-								P.id AS 'ID', 
-								@inputName AS 'Nombre', 
-								T.nombre AS 'Tipo DocID' , 
-								@inputDocIDVal AS 'Valor ID', 
-								'Activo' AS 'Estado'
-							FROM [dbo].[Propietario] P
-							JOIN [dbo].[TipoDocID] T ON T.id = @DocidID
-							WHERE P.valorDocID = @inputDocIDVal
-							FOR JSON PATH, ROOT('Propietario'))
+		SET @jsonDespues = (
+				SELECT @inputName AS 'Nombre',
+					T.nombre AS 'Tipo DocID',
+					@inputDocIDVal AS 'Valor ID',
+					'Activo' AS 'Estado'
+				FROM [dbo].[Propietario] P
+				JOIN [dbo].[TipoDocID] T ON T.id = @DocidID
+				WHERE P.valorDocID = @inputDocIDVal
+				FOR JSON PATH,
+					ROOT('Propietario')
+				)
 
 		INSERT INTO [dbo].[Bitacora] (
 			idTipoEntidad,
 			idEntidad,
-			jsonAntes, 
+			jsonAntes,
 			jsonDespues,
 			insertedAt,
 			insertedBy,
 			insertedIn
-		) SELECT
-			T.id,
+			)
+		SELECT T.id,
 			@idPropietario,
 			@jsonAntes,
 			@jsonDespues,
@@ -79,8 +84,10 @@ BEGIN
 			@inputInsertedBy,
 			@inputInsertedIn
 		FROM [dbo].[TipoEntidad] T
-		JOIN [dbo].[Propietario] P ON P.valorDocID = @inputDocIDVal and P.activo = 1
+		JOIN [dbo].[Propietario] P ON P.valorDocID = @inputDocIDVal
+			AND P.activo = 1
 		WHERE T.Nombre = 'Propietario'
+
 		COMMIT
 
 		RETURN 1

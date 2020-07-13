@@ -87,6 +87,7 @@
     <Content Include="Content\login-page.css" />
     <Content Include="Pages\Admin\AdminPanelUC.ascx" />
     <Content Include="Pages\Admin\consultaCambioEntidad.aspx" />
+    <Content Include="Pages\Admin\crudPropiedades.aspx" />
     <Content Include="Pages\Admin\propiedadesCreate.aspx" />
     <Content Include="Pages\Admin\propiedadesCRUD.aspx" />
     <Content Include="Pages\Admin\propiedadesDelete.aspx" />
@@ -316,6 +317,13 @@
     </Compile>
     <Compile Include="Pages\Admin\consultaCambioEntidad.aspx.designer.cs">
       <DependentUpon>consultaCambioEntidad.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Admin\crudPropiedades.aspx.cs">
+      <DependentUpon>crudPropiedades.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Admin\crudPropiedades.aspx.designer.cs">
+      <DependentUpon>crudPropiedades.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\Admin\propiedadesCreate.aspx.cs">
       <DependentUpon>propiedadesCreate.aspx</DependentUpon>
