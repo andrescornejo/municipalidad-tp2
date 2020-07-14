@@ -27,7 +27,7 @@ BEGIN
 			p.Direccion AS 'Dirección',
 			p.ConsumoAcumuladoM3 as 'Consumo acumulado m3',
 			p.UltimoConsumoM3 as 'Ultimo consumo m3',
-			'BORRADO' AS 'Estado'
+			'Activo' AS 'Estado'
 		from Propiedad p where p.id = @idPropiedad
 		FOR JSON PATH,
 			ROOT('Propiedad')

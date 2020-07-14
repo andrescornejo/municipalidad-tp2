@@ -48,7 +48,7 @@ BEGIN
 		SET @jsonDespues = (SELECT
 							@idEntidad AS 'ID',
 							@inputUsername AS 'Nombre Usuario', 
-							'*******' AS 'Contrasenna', 
+							'*****' AS 'Contraseña', 
 							@Admin AS 'Tipo Usuario', 
 							'Activo' AS 'Estado'
 							FOR JSON PATH, ROOT('Usuario'))

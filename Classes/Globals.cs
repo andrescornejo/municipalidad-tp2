@@ -21,6 +21,8 @@ namespace Muni.Classes
         private static int uSERID = 2; //-1
         private static string cURRENTIP = "MOTHERRUSSIA";
 
+        public static string CURRENTPANEL = "create"; //Can be set to create, update, or delete.
+
         public static string CURRENTUSER { get => cURRENTUSER; set => cURRENTUSER = value; }
         public static bool ISADMIN { get => iSADMIN; set => iSADMIN = value; }
         public static int USERID { get => uSERID; set => uSERID = value; }

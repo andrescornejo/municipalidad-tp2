@@ -18,15 +18,17 @@
                 <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Tipo de gestión
                 </a>
-
+                
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <a id="dropCreate" class="dropdown-item" href="#">Crear</a>
-                    <a id="dropUpdate" class="dropdown-item" href="#">Actualizar</a>
-                    <a id="dropDelete" class="dropdown-item" href="#">Borrar</a>
+                    <asp:LinkButton ID="dropCreate" CssClass="dropdown-item" runat="server" OnClick="dropCreate_Click">Crear</asp:LinkButton>
+                    <asp:LinkButton ID="dropUpdate" CssClass="dropdown-item" runat="server" OnClick="dropUpdate_Click">Actualizar</asp:LinkButton>
+                    <asp:LinkButton ID="dropDelete" CssClass="dropdown-item" runat="server" OnClick="dropDelete_Click">Borrar</asp:LinkButton>
                 </div>
             </div>
-            <div id="jtCreate" class="jumbotron">
-                <h1 class="display-4">Creación de propiedades.</h1>
+
+            <%-- Create section --%>
+            <div id="jtCreate" class="jumbotron" runat="server">
+                <h1 class="display-4">Crear de propiedades.</h1>
                 <p class="lead">Ingrese los datos de la nueva propiedad.</p>
                 <hr class="my-4"/>
                 <div class="form-group row px-3 pb-4">
@@ -45,55 +47,73 @@
                 </div>
                 <asp:Button ID="btnCreateProp" runat="server" Text="Crear propiedad" CssClass="btn btn-primary btn-lg" OnClick="btnCreateProp_Click"/>
             </div>
-            <div id="jtUpdate" class="jumbotron hidden">
-                <h1 class="display-4">Actualización de propiedades.</h1>
-                <p class="lead">Ingrese los datos requeridos para actualizar la propiedad.</p>
-                <hr class="my-4"/>
 
+            <%-- Update section --%>
+            <div id="jtUpdate" class="jumbotron" runat="server">
+                <h1 class="display-4">Actualizar de propiedades.</h1>
+                <p class="lead">Seleccione la propiedad que desea actualizar, y modifique los datos respectivos.</p>
+                <hr class="my-4"/>
+                <div class="form-group row px-3 pb-4">
+                    <div class="col-xs-2">
+                        <p class="lead">Número de propiedad</p>
+                        <asp:TextBox ID="tb_UnumProp" runat="server" CssClass="form-control" TextMode="Number"></asp:TextBox>
+                    </div>
+                    <div class="col-xs-2 px-3">
+                        <p class="lead">Valor monetario</p>
+                        <asp:TextBox ID="tb_Uval" runat="server" CssClass="form-control" TextMode="Number"></asp:TextBox>
+                    </div>
+                    <div class="col-xs-2">
+                        <p class="lead">Dirección</p>
+                        <asp:TextBox ID="tb_Udir" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+                    <div class="col-xs-2  px-3">
+                        <p class="lead">Consumo acumulado en m3</p>
+                        <asp:TextBox ID="tb_Uacum" runat="server" CssClass="form-control" TextMode="Number"></asp:TextBox>
+                    </div>
+                    <div class="col-xs-2">
+                        <p class="lead">Último consumo en m3</p>
+                        <asp:TextBox ID="tb_Uult" runat="server" CssClass="form-control" TextMode="Number"></asp:TextBox>
+                    </div>
+                    <asp:HiddenField ID="hf_Uid" runat="server" />
+                </div>
+                <asp:Button ID="btnUpdateProp" runat="server" Text="Actualizar propiedad" CssClass="btn btn-primary btn-lg" OnClick="btnUpdateProp_Click"/>
             </div>
-            <div id="jtDelete" class="jumbotron hidden">
-                <h1 class="display-4">Borrado de propiedades.</h1>
+
+            <%-- Delete section --%>
+            <div id="jtDelete" class="jumbotron" runat="server">
+                <h1 class="display-4">Borrar de propiedades.</h1>
                 <p class="lead">Seleccione la propiedad que desea borrar.</p>
                 <hr class="my-4"/>
                 <div class="form-group row px-3 pb-4">
                     <div class="col-xs-2">
-                        <asp:Label ID="lblDelProp" CssClass="lead" runat="server" Text=""></asp:Label>
+                        <p class="lead">Número de propiedad</p>
+                        <asp:TextBox ID="tb_DnumProp" runat="server" CssClass="form-control"></asp:TextBox>
                     </div>
                 </div>
                 <asp:Button ID="btnDeleteProp" runat="server" Text="Borrar propiedad" CssClass="btn btn-danger btn-lg" OnClick="btnDeleteProp_Click"/>
             </div>
+
+            <%-- Grid section --%>
             <div id="jtGrid" class="jumbotron">
                 <h1 class="h3">Propiedades registradas:</h1>
                 <div class="my-4"></div>
-                <asp:GridView ID="gridProp" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false" OnSelectedIndexChanged="gridProp_SelectedIndexChanged"  > <%--OnSelectedIndexChanged = "gridLink_Clicked"--%><%--CssClass="table table-hover table-dark"--%>
+                <asp:GridView ID="gridProp" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false" OnRowCommand="gridProp_RowCommand"  >
                     <Columns>
-                        <asp:ButtonField Text="Seleccionar propiedad" CommandName="Select" ItemStyle-Width="100"/><%--onclientclick="return false;" autopostback="false"--%>
-<%--                        <asp:TemplateField>
+                        <asp:TemplateField>
                             <ItemTemplate>
-                                <asp:Button ID="btnG" Text="Select" runat="server" CommandName="Select" CommandArgument="<%# Container.DataItemIndex %>"/>
+                                <asp:Button ID="btnSelectRow" CssClass="btn btn-info" Text="Seleccionar propiedad" runat="server" CommandName="Select" CommandArgument="<%# Container.DataItemIndex %>"/>
                             </ItemTemplate>
-                        </asp:TemplateField>--%>
+                        </asp:TemplateField>
                         <asp:BoundField DataField="numFin" HeaderText="Número de propiedad" />
                         <asp:BoundField DataField="val" HeaderText="Valor monetario" />
                         <asp:BoundField DataField="dir" HeaderText="Dirección" />
                         <asp:BoundField DataField="cAm3" HeaderText="Consumo acumulado en m3" />
                         <asp:BoundField DataField="uCm3" HeaderText="Último consumo en m3" />
+                        <asp:BoundField DataField="id"/>
                     </Columns>
                 </asp:GridView>
-<%--                <asp:UpdatePanel ID="UpdatePanel1" runat="server" >
-                    <ContentTemplate>
-
-                    </ContentTemplate>
-                    <Triggers>
-                        <asp:PostBackTrigger ControlID="gridProp"/> 
-                    </Triggers>
-                </asp:UpdatePanel>--%>
             </div>
         </div>
-        <%-- This will be used as a connection point between client and server to determine what panel is currently in use, 
-                since i cant prevent the gridview from postbacking for some reason. --%>
-        <asp:HiddenField ID="currentUseCase" runat="server"/>
     </form>
-    <script src="../../Scripts/dashboard.js"></script>
 </body>
 </html>

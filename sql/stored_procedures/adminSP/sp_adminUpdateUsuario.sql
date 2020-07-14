@@ -9,7 +9,7 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_adminUpdateUsuario @inputOLDUsername NVARCHAR(50),
+ALTER PROC csp_adminUpdateUsuario @inID int,
 	@inputNewUsername NVARCHAR(50),
 	@inputNewPassword NVARCHAR(100),
 	@inputAdminStatus BIT,
@@ -20,28 +20,22 @@ BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
-		DECLARE @idUser INT
 		DECLARE @jsonAntes NVARCHAR(500)
 		DECLARE @jsonDespues NVARCHAR(500)
 		DECLARE @adminBefore NVARCHAR(500)
 		DECLARE @adminAfter NVARCHAR(500)
-		DECLARE @idEntidad INT
 		DECLARE @oldAdminStatus BIT
+		DECLARE @newPasswd NVARCHAR(500)
 
-		EXEC csp_getUserIDFromUsername @inputOLDUsername,
-			@idUser OUTPUT
+		IF @inputNewPassword = '*****'
+			set @newPasswd = (select u.passwd from Usuario u where u.id = @inID)
+		ELSE
+			set @newPasswd = @inputNewPassword
 
-		PRINT (@idUser)
-
-		SET @idEntidad = (
-				SELECT U.id
-				FROM [dbo].[Usuario] U
-				WHERE U.username = @inputOLDUsername
-				)
 		SET @oldAdminStatus = (
 				SELECT u.isAdmin
 				FROM Usuario u
-				WHERE u.id = @idEntidad
+				WHERE u.id = @inID
 				)
 		SET @adminBefore = (
 				CASE 
@@ -58,10 +52,11 @@ BEGIN
 					END
 				)
 		SET @jsonAntes = (
-				SELECT @inputOLDUsername AS 'Nombre Usuario',
-					'*******' AS 'Contraseña',
-					@adminBefore AS 'Tipo Usuario',
+				SELECT u.username AS 'Nombre Usuario',
+					'*****' AS 'Contraseña',
+					u.isAdmin AS 'Tipo Usuario',
 					'Activo' AS 'Estado'
+					from Usuario u where u.id = @inID
 				FOR JSON PATH,
 					ROOT('Usuario')
 				)
@@ -71,17 +66,18 @@ BEGIN
 
 		UPDATE Usuario
 		SET username = @inputNewUsername,
-			passwd = @inputNewPassword,
+			passwd = @newPasswd,
 			isAdmin = @inputAdminStatus
-		WHERE id = @idUser
+		WHERE id = @inID
 			AND activo = 1
 
 		-- inset into bitacora
 		SET @jsonDespues = (
-				SELECT @inputNewUsername AS 'Nombre Usuario',
-					'*******' AS 'Contraseña',
-					@adminAfter AS 'Tipo Usuario',
+				SELECT u.username AS 'Nombre Usuario',
+					'*****' AS 'Contraseña',
+					u.isAdmin AS 'Tipo Usuario',
 					'Activo' AS 'Estado'
+					from Usuario u where u.id = @inID
 				FOR JSON PATH,
 					ROOT('Usuario')
 				)
@@ -96,7 +92,7 @@ BEGIN
 			insertedIn
 			)
 		SELECT T.id,
-			@idUser,
+			@inID,
 			@jsonAntes,
 			@jsonDespues,
 			GETDATE(),

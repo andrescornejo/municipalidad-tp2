@@ -10,85 +10,81 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_adminDeleteUsuario @usuarioIDInput NVARCHAR(50),
+ALTER PROC csp_adminDeleteUsuario @inUsr NVARCHAR(100),
 	@inputInsertedBy NVARCHAR(100),
 	@inputInsertedIn NVARCHAR(20)
 AS
 BEGIN
-
 	DECLARE @jsonAntesUsuario NVARCHAR(500)
 	DECLARE @jsonDespuesUsuario NVARCHAR(500)
-	DECLARE @idEntidad INT
 	DECLARE @Admin NVARCHAR(20)
 	DECLARE @isAdmin BIT
-	DECLARE @idUsuario INT = (
-			SELECT id
-			FROM Usuario
-			WHERE username = @usuarioIDInput
-			)
+	declare @usrID int
+
+	set @usrID = (select u.id from Usuario u where u.username = @inUsr)
+	print(@usrID)
 
 	BEGIN TRY
-		SET @isAdmin = (SELECT U.isAdmin FROM [dbo].[Usuario] U WHERE U.id = @usuarioIDInput)
-
-		SET @Admin = (CASE WHEN @isAdmin = 1
+		SET @isAdmin = (
+				SELECT U.isAdmin
+				FROM [dbo].[Usuario] U
+				WHERE U.id = @usrID
+				)
+		SET @Admin = (
+				CASE 
+					WHEN @isAdmin = 1
 						THEN 'Administrador'
-						ELSE 'Cliente'
-					END)
-
-		SET @jsonAntesUsuario = (SELECT
-									U.id AS 'ID',
-									U.username AS 'Nombre Usuario', 
-									'*******' AS 'Contrasenna', 
-									@Admin AS 'Tipo Usuario', 
-									'Activo' AS 'Estado'
- 							FROM [dbo].[Usuario] U
-							WHERE U.id = @usuarioIDInput
-							FOR JSON PATH, ROOT('Usuario'))
-
+					ELSE 'Cliente'
+					END
+				)
+		SET @jsonAntesUsuario = (
+				SELECT U.id AS 'ID',
+					U.username AS 'Nombre Usuario',
+					'*****' AS 'Contraseña',
+					@Admin AS 'Tipo Usuario',
+					'Activo' AS 'Estado'
+				FROM [dbo].[Usuario] U
+				WHERE U.id = @usrID
+				FOR JSON PATH,
+					ROOT('Usuario')
+				)
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 
 		BEGIN TRANSACTION
 
 		UPDATE UsuarioVsPropiedad
 		SET activo = 0
-		WHERE idUsuario = @idUsuario
+		WHERE idUsuario = @usrID
+
 		-- Necesito iterar por cada relacion entre propiedad y usuario
 		-- Falta agregar los cambios de las relaaciones Usuario Vs Propiedad
-
 		UPDATE Usuario
 		SET activo = 0
-		WHERE id = @idUsuario
+		WHERE id = @usrID
 
 		-- insert into bitacora
-		SET @jsonDespuesUsuario = (SELECT
-									U.id AS 'ID',
-									U.username AS 'Nombre Usuario', 
-									'*******' AS 'Contrasenna', 
-									@Admin AS 'Tipo Usuario', 
-									'Inactivo' AS 'Estado'
- 							FROM [dbo].[Usuario] U
-							WHERE U.id = @usuarioIDInput
-							FOR JSON PATH, ROOT('Usuario'))
 
 		INSERT INTO [dbo].[Bitacora] (
 			idTipoEntidad,
-			idEntidad, 
+			idEntidad,
 			jsonAntes,
 			jsonDespues,
 			insertedAt,
 			insertedBy,
 			insertedIn
-		) SELECT
-			T.id,
-			@idEntidad,
+			)
+		SELECT T.id,
+			@usrID,
 			@jsonAntesUsuario,
-			@jsonDespuesUsuario,
+			null,
 			GETDATE(),
 			@inputInsertedBy,
 			@inputInsertedIn
 		FROM [dbo].[TipoEntidad] T
 		WHERE T.Nombre = 'Usuario'
+
 		COMMIT
+
 		RETURN 0
 	END TRY
 

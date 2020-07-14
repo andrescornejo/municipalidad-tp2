@@ -71,15 +71,15 @@ namespace Muni.Pages.Admin
                 this.gridJsonAntes.DataBind();
             }
             else
-                this.lblJsonAntes.Text = "Entidad creada"; //divJsonAntes.Visible = false;
+                this.lblJsonAntes.Text = "Entidad antes: No existe."; //divJsonAntes.Visible = false;
             if (dataTableDespues != null)
             {
-                this.lblJsonDespues.Text = "Entidad despues:";
+                this.lblJsonDespues.Text = "Entidad después:";
                 this.gridJsonDespues.DataSource = dataTableDespues;
                 this.gridJsonDespues.DataBind();
             }
             else
-                this.lblJsonDespues.Text = "Entidad borrada";
+                this.lblJsonDespues.Text = "Entidad después: Borrada.";
                 
 
         }

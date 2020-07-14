@@ -23,7 +23,7 @@
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <a class="dropdown-item" href="#">Propietarios</a>
                         <a class="dropdown-item" href="crudPropiedades.aspx">Propiedades</a>
-                        <a class="dropdown-item" href="#">Usuarios</a>
+                        <a class="dropdown-item" href="crudUsuario.aspx">Usuarios</a>
                     </div>
                 </li>
                 <li class="my-1"><a href="#" class="btn btn-dark btn-lg">Propiedades de un propietario</a></li>
@@ -46,8 +46,16 @@
     </ul>
   </nav>
 </div>
+<div class="container">
+    <div id="alertDiv" class="alert alert-success mt-3 hidden" role="alert" runat="server">
+        <asp:Label ID="lblAlert" runat="server" Text=""></asp:Label>
+    </div>
+    <div id="successDiv" class="alert alert-danger mt-3 hidden" role="alert" runat="server">
+        <asp:Label ID="lblSucc" runat="server" Text=""></asp:Label>
+    </div>
+</div>
 
-<div class="py-5"></div>
+<div class="py-3"></div>
 
 <script src="../../Scripts/jquery-3.5.1.min.js"></script>
 <script src="../../Scripts/umd/popper.min.js"></script>
