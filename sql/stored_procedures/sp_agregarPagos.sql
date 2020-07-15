@@ -68,12 +68,16 @@ BEGIN
                 -- eliminio los Pagos de esa Finca tabla general
                 DELETE FROM @tmpPago
                 WHERE NumFinca = @NumFinca
-                -- Creo un comprobante por los recibos ha pagar de esa propiedad
-                INSERT INTO [dbo].[ComprobanteDePago] (fecha,MontoTotal,activo)
-                SELECT @fechaInput, 0, 1
+                
+                IF @idComprobante = NULL OR (SELECT CP.MontoTotal FROM [dbo].[ComprobanteDePago] CP WHERE CP.id = @idComprobante) != 0
+                BEGIN
+                    -- Creo un comprobante por los recibos ha pagar de esa propiedad
+                    INSERT INTO [dbo].[ComprobanteDePago] (fecha,MontoTotal,activo)
+                    SELECT @fechaInput, 0, 1
 
-                SET @idComprobante = (SELECT TOP 1 CP.id FROM [dbo].[ComprobanteDePago] CP ORDER BY CP.id DESC)
-
+                    SET @idComprobante = (SELECT TOP 1 CP.id FROM [dbo].[ComprobanteDePago] CP ORDER BY CP.id DESC)
+                END
+                
                 WHILE (SELECT COUNT(*) FROM @tmpPagoProp) > 0
                 BEGIN
                     SET @idCC = (SELECT TOP 1 tmpP.idTipoRecibo FROM @tmpPagoProp tmpP)

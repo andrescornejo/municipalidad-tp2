@@ -75,7 +75,7 @@ BEGIN
 			SET @idEntidad = (SELECT UP.id FROM [dbo].[UsuarioVsPropiedad] UP
 								INNER JOIN [dbo].[Usuario] U ON U.username = @UserRef
 								INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @PropiedadRef
-								WHERE UP.idPropiedad = U.id AND UP.idUsuario = U.id)
+								WHERE UP.idPropiedad = P.id AND UP.idUsuario = U.id)
 
 			SET @jsonDespues = (SELECT 
 								@UserRef AS 'Nombre Usuario',

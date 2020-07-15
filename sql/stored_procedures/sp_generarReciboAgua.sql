@@ -31,95 +31,93 @@ BEGIN
 				WHERE C.nombre = 'Agua'
 				)
 
-		IF @DiaCobro != (
+		IF @DiaCobro = (
 				SELECT DAY(@inFecha)
 				)
 		BEGIN
-			RETURN
-		END
 
-		DECLARE @tmpPropiedadesCC_Agua TABLE (idPropiedad INT)
-		DECLARE @tmpRecibos TABLE (
-			idPropiedad INT,
-			idConceptoCobro INT,
-			Fecha DATE,
-			FechaVencimiento DATE,
-			Monto MONEY
-			)
-
-		SET @idCCAgua = (
-				SELECT C.id
-				FROM [dbo].[ConceptoCobro] C
-				WHERE C.nombre = 'Agua'
-				)
-		SET @ValorM3 = (
-				SELECT CA.ValorM3
-				FROM [dbo].[CC_ConsumoAgua] CA
-				WHERE CA.id = @idCCAgua
-				)
-		SET @MontoMinimo = (
-				SELECT CA.MontoMinimo
-				FROM [dbo].[CC_ConsumoAgua] CA
-				WHERE CA.id = @idCCAgua
-				)
-		SET @QDias = (
-				SELECT CC.QDiasVencimiento
-				FROM [dbo].[ConceptoCobro] CC
-				WHERE CC.id = @idCCAgua
+			DECLARE @tmpPropiedadesCC_Agua TABLE (idPropiedad INT)
+			DECLARE @tmpRecibos TABLE (
+				idPropiedad INT,
+				idConceptoCobro INT,
+				Fecha DATE,
+				FechaVencimiento DATE,
+				Monto MONEY
 				)
 
-		INSERT INTO @tmpPropiedadesCC_Agua (idPropiedad)
-		SELECT CP.idPropiedad
-		FROM [dbo].[CCenPropiedad] CP
-		WHERE CP.idConceptoCobro = @idCCAgua
-
-		WHILE (
-				SELECT COUNT(*)
-				FROM @tmpPropiedadesCC_Agua
-				) > 0
-		BEGIN
-			-- Tomamos la primera propiedad
-			SELECT TOP 1 @idPropiedad = tmp.idPropiedad
-			FROM @tmpPropiedadesCC_Agua tmp
-
-			-- Luego la eliminamos de la tabla
-			DELETE @tmpPropiedadesCC_Agua
-			WHERE idPropiedad = @idPropiedad
-
-			-- obtenemos el consumo
-			SET @ConsumoM3 = (
-					SELECT P.ConsumoAcumuladoM3
-					FROM [dbo].[Propiedad] P
-					WHERE P.id = @idPropiedad
+			SET @idCCAgua = (
+					SELECT C.id
+					FROM [dbo].[ConceptoCobro] C
+					WHERE C.nombre = 'Agua'
 					)
-			-- el consumo hasta el ultimo recibo generado
-			SET @UltimoConsumoM3 = (
-					SELECT P.UltimoConsumoM3
-					FROM [dbo].[Propiedad] P
-					WHERE P.id = @idPropiedad
+			SET @ValorM3 = (
+					SELECT CA.ValorM3
+					FROM [dbo].[CC_ConsumoAgua] CA
+					WHERE CA.id = @idCCAgua
 					)
-			-- calculamos el monto cosumido en el ultimo mes
-			SET @Monto = CASE 
-					WHEN (@ConsumoM3 - @UltimoConsumoM3) * @ValorM3 > @MontoMinimo
-						THEN (@ConsumoM3 - @UltimoConsumoM3) * @ValorM3
-					ELSE @MontoMinimo
-					END
+			SET @MontoMinimo = (
+					SELECT CA.MontoMinimo
+					FROM [dbo].[CC_ConsumoAgua] CA
+					WHERE CA.id = @idCCAgua
+					)
+			SET @QDias = (
+					SELECT CC.QDiasVencimiento
+					FROM [dbo].[ConceptoCobro] CC
+					WHERE CC.id = @idCCAgua
+					)
 
-			-- Creamos el recibo temporal 
-			INSERT INTO @tmpRecibos (
-				idPropiedad,
-				idConceptoCobro,
-				Fecha,
-				FechaVencimiento,
-				Monto
-				)
-			SELECT @idPropiedad,
-				@idCCAgua,
-				@inFecha,
-				DATEADD(DAY, @QDias, @inFecha),
-				@Monto
+			INSERT INTO @tmpPropiedadesCC_Agua (idPropiedad)
+			SELECT CP.idPropiedad
+			FROM [dbo].[CCenPropiedad] CP
+			WHERE CP.idConceptoCobro = @idCCAgua
+
+			WHILE (
+					SELECT COUNT(*)
+					FROM @tmpPropiedadesCC_Agua
+					) > 0
+			BEGIN
+				-- Tomamos la primera propiedad
+				SELECT TOP 1 @idPropiedad = tmp.idPropiedad
+				FROM @tmpPropiedadesCC_Agua tmp
+
+				-- Luego la eliminamos de la tabla
+				DELETE @tmpPropiedadesCC_Agua
+				WHERE idPropiedad = @idPropiedad
+
+				-- obtenemos el consumo
+				SET @ConsumoM3 = (
+						SELECT P.ConsumoAcumuladoM3
+						FROM [dbo].[Propiedad] P
+						WHERE P.id = @idPropiedad
+						)
+				-- el consumo hasta el ultimo recibo generado
+				SET @UltimoConsumoM3 = (
+						SELECT P.UltimoConsumoM3
+						FROM [dbo].[Propiedad] P
+						WHERE P.id = @idPropiedad
+						)
+				-- calculamos el monto cosumido en el ultimo mes
+				SET @Monto = CASE 
+						WHEN (@ConsumoM3 - @UltimoConsumoM3) * @ValorM3 > @MontoMinimo
+							THEN (@ConsumoM3 - @UltimoConsumoM3) * @ValorM3
+						ELSE @MontoMinimo
+						END
+
+				-- Creamos el recibo temporal 
+				INSERT INTO @tmpRecibos (
+					idPropiedad,
+					idConceptoCobro,
+					Fecha,
+					FechaVencimiento,
+					Monto
+					)
+				SELECT @idPropiedad,
+					@idCCAgua,
+					@inFecha,
+					DATEADD(DAY, @QDias, @inFecha),
+					@Monto
+			END
 		END
-
 		-- Agreamos otra vez las propiedades 
 		INSERT INTO @tmpPropiedadesCC_Agua (idPropiedad)
 		SELECT CP.idPropiedad
@@ -153,18 +151,17 @@ BEGIN
 				FROM @tmpPropiedadesCC_Agua
 				) > 0
 		BEGIN
-			SELECT TOP 1 @idPropiedad = tmp.idPropiedad
-			FROM @tmpPropiedadesCC_Agua tmp
+			SET @idPropiedad = (SELECT TOP 1 tmp.idPropiedad
+			FROM @tmpPropiedadesCC_Agua tmp ORDER BY tmp.idPropiedad DESC)
 
 			UPDATE [dbo].[Propiedad]
 			SET UltimoConsumoM3 = ConsumoAcumuladoM3
 			WHERE id = @idPropiedad
 
 			-- insert change into bitacora
-			DELETE TOP (1)
-			FROM @tmpPropiedadesCC_Agua
+			DELETE @tmpPropiedadesCC_Agua
+			WHERE idPropiedad = @idPropiedad
 		END
-
 		COMMIT
 	END TRY
 

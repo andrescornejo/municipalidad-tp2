@@ -59,9 +59,9 @@ BEGIN
 		SELECT PO.id,
 			P.id,
 			1
-		FROM @tmpProtxProp AS pp
-		JOIN Propietario P ON P.valorDocID = pp.identificacion
-		JOIN Propiedad PO ON PO.NumFinca = pp.NumFinca
+		FROM @tmpProtxProp AS tmp
+		JOIN Propietario P ON P.valorDocID = tmp.identificacion
+		JOIN Propiedad PO ON PO.NumFinca = tmp.NumFinca
 		
 		--select * from PropiedadDelPropietario
 
@@ -74,7 +74,7 @@ BEGIN
 			SET @idEntidad = (SELECT pp.id FROM [dbo].[PropiedadDelPropietario] pp
 							INNER JOIN Propietario P ON P.valorDocID = @PropRef
 							INNER JOIN Propiedad PO ON PO.NumFinca = @FincaRef
-							WHERE P.id = pp.idPropietario AND PO.id = idPropiedad)
+							WHERE P.id = pp.idPropietario AND PO.id = pp.idPropiedad)
 
 			SET @jsonDespues = (SELECT 
 								@FincaRef AS 'Numero Finca',

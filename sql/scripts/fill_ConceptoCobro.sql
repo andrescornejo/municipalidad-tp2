@@ -4,10 +4,9 @@
 USE municipalidad
 GO
 
-DECLARE @hdoc INT;
 
 SET IDENTITY_INSERT ConceptoCobro ON
-
+DECLARE @hdoc INT;
 DECLARE @ConceptoCobroXML XML;
 
 SELECT @ConceptoCobroXML = C

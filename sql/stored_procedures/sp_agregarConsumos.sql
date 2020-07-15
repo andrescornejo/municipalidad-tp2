@@ -27,8 +27,8 @@ BEGIN
 		SET NOCOUNT ON
 		DECLARE @MontoM3 MONEY
 		DECLARE @NumFincaRef INT
-
 		DECLARE @hdoc INT
+		DECLARE @idTipoTrans INT
 		DECLARE @tmpConsumo TABLE (
 			idTipoTransConsumo INT,
 			FechaXml DATE,
@@ -73,6 +73,12 @@ BEGIN
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION
 
+		WHILE (SELECT COUNT(*) FROM @tmpConsumo) > 0
+		BEGIN
+			-- Seleccionamos la primera propiedad
+			SET @NumFincaRef = (SELECT TOP 1 tmp.NumFinca FROM @tmpConsumo tmp ORDER BY tmp.NumFinca DESC)
+			SET @idTipoTrans = (SELECT TOP 1 tmp.idTipoTransConsumo FROM @tmpConsumo tmp ORDER BY tmp.NumFinca DESC)
+
 			INSERT dbo.TransaccionConsumo (
 				idPropiedad,
 				fecha,
@@ -86,28 +92,26 @@ BEGIN
 				tmp.FechaXml,
 				@MontoM3,
 				tmp.LecturaM3,
-				(CASE WHEN idTipoTransConsumo = 1 THEN tmp.LecturaM3 - P.UltimoConsumoM3
+				(CASE WHEN @idTipoTrans = 1 THEN tmp.LecturaM3 - P.UltimoConsumoM3
 					ELSE P.ConsumoAcumuladoM3 + tmp.LecturaM3
 				END),
 				1,
-				idTipoTransConsumo
+				@idTipoTrans
 			FROM @tmpConsumo tmp
-			INNER JOIN dbo.Propiedad P ON tmp.NumFinca = P.NumFinca
+			INNER JOIN dbo.Propiedad P ON @NumFincaRef = P.NumFinca
+			WHERE tmp.NumFinca = @NumFincaRef AND tmp.idTipoTransConsumo = @idTipoTrans
 	
 	
-			WHILE (SELECT COUNT(*) FROM @tmpConsumo) > 0
-			BEGIN
-				-- Seleccionamos la primera propiedad
-				SET @NumFincaRef = (SELECT TOP 1 tmp.NumFinca FROM @tmpConsumo tmp)
-				DELETE @tmpConsumo WHERE NumFinca = @NumFincaRef
-	
-				UPDATE [dbo].[Propiedad]
-				SET ConsumoAcumuladoM3 = (SELECT Tc.NuevoAcumuladoM3 
-											FROM [dbo].[TransaccionConsumo] TC
-											INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @NumFincaRef 
-																				AND P.id = TC.id)
-				WHERE NumFinca = @NumFincaRef
-			END
+			UPDATE [dbo].[Propiedad]
+			SET ConsumoAcumuladoM3 = (SELECT TC.NuevoAcumuladoM3 
+										FROM [dbo].[TransaccionConsumo] TC
+										INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @NumFincaRef 
+										WHERE TC.idPropiedad = P.id AND TC.fecha = @inFecha
+												AND TC.idTipoTransacCons = @idTipoTrans)
+			WHERE NumFinca = @NumFincaRef
+
+			DELETE @tmpConsumo WHERE NumFinca = @NumFincaRef AND idTipoTransConsumo = @idTipoTrans
+		END
 		COMMIT 
 	END TRY
 
