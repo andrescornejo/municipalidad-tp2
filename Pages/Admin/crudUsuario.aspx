@@ -51,7 +51,7 @@
             <%-- Update section --%>
             <div id="jtUpdate" class="jumbotron" runat="server">
                 <h1 class="display-4">Actualizar de usuarios.</h1>
-                <p class="lead">Seleccione el usuario que desea actualizar, y modifique los datos respectivos.</p>
+                <p class="lead">Seleccione el usuario que desea actualizar, y modifique los datos necesarios.</p>
                 <hr class="my-4"/>
                 <div class="form-group row px-3 pb-4">
                     <div class="col-xs-2">

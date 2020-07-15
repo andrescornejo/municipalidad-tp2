@@ -19,21 +19,21 @@ BEGIN
 
 		DECLARE @idPropietario INT
 		DECLARE @jsonAntes NVARCHAR(500)
-		DECLARE @jsonDespues NVARCHAR(500)
 		DECLARE @idEntidad INT
 		
 		EXEC @idPropietario = csp_getPropietarioIDFromDocID @InputDocID
 
-		SET @jsonAntes = (SELECT 
-						P.id AS 'ID', 
-						P.nombre AS 'Nombre', 
-						T.nombre AS 'Tipo DocID' , 
-						@inputDocID AS 'Valor ID', 
-						'Activo' AS 'Estado'
-					FROM [dbo].[Propietario] P
-					JOIN [dbo].[TipoDocID] T ON T.id = P.idTipoDocID
-					WHERE P.valorDocID = @inputDocID
-					FOR JSON PATH,ROOT('Propietario'))
+		SET @jsonAntes = (
+				SELECT P.nombre AS 'Nombre',
+					P.valorDocID AS 'Valor del documento legal',
+					T.nombre AS 'Tipo de documento legal',
+					'Activo' AS 'Estado'
+				FROM [dbo].[Propietario] P
+				JOIN [dbo].[TipoDocID] T ON T.id = P.idTipoDocID
+				WHERE P.valorDocID = @InputDocID
+				FOR JSON PATH,
+					ROOT('Propietario')
+				)
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION
@@ -49,17 +49,6 @@ BEGIN
 		update Propietario
 		set activo = 0
 		WHERE id = @idPropietario
-		
-		SET @jsonDespues = (SELECT 
-						P.id AS 'ID', 
-						P.nombre AS 'Nombre', 
-						T.nombre AS 'Tipo DocID' , 
-						@inputDocID AS 'Valor ID', 
-						'Activo' AS 'Estado'
-					FROM [dbo].[Propietario] P
-					JOIN [dbo].[TipoDocID] T ON T.id = P.idTipoDocID
-					WHERE P.valorDocID = @inputDocID
-					FOR JSON PATH,ROOT('Propietario'))
 
 		INSERT INTO [dbo].[Bitacora] (
 			idTipoEntidad,
@@ -73,7 +62,7 @@ BEGIN
 			T.id,
 			@idEntidad,
 			@jsonAntes,
-			@jsonDespues,
+			null,
 			GETDATE(),
 			@inputInsertBy,
 			@inputInsertIn
