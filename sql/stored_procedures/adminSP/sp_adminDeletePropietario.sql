@@ -19,7 +19,6 @@ BEGIN
 
 		DECLARE @idPropietario INT
 		DECLARE @jsonAntes NVARCHAR(500)
-		DECLARE @idEntidad INT
 		
 		EXEC @idPropietario = csp_getPropietarioIDFromDocID @InputDocID
 
@@ -60,7 +59,7 @@ BEGIN
 			insertedIn
 		) SELECT
 			T.id,
-			@idEntidad,
+			@idPropietario,
 			@jsonAntes,
 			null,
 			GETDATE(),
@@ -88,4 +87,4 @@ BEGIN
 END
 GO
 
---EXEC csp_adminDeletePropietario '301777068'
+--EXEC csp_adminDeletePropietario '251', '33', '32'
