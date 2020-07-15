@@ -125,6 +125,7 @@ BEGIN
 
 			IF EXISTS (SELECT RE.id FROM [dbo].[Reconexion] RE WHERE RE.id = @idRecibo)
 			BEGIN
+				DECLARE @idPropiedad INT = (SELECT P.id FROM [dbo].[Propiedad] P WHERE P.NumFinca = @inNumFinca)
 				EXEC csp_generarOrdReconexion @inFecha, @idPropiedad
 			END
 		END
