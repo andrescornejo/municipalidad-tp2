@@ -26,7 +26,7 @@ BEGIN
                     ELSE 'Inactivo'
                     END)
                     
-    SET @jsonAntes = (SELECT 
+    SET @jsonAntes = (SELECT TOP 1
             D.NumFinca AS 'Numero Finca',
             D.valor AS 'Valor',
             D.Direccion AS 'Direccion',

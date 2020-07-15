@@ -98,7 +98,7 @@ BEGIN
 				JOIN [dbo].[ConceptoCobro] CC ON CC.nombre = 'Interes Moratorio'
 				WHERE P.NumFinca = @inNumFinca
 
-				-- incluimos en valor del recibo en el comprobante
+				-- incluimos en monto del recibo en el comprobante
 				UPDATE [dbo].[ComprobanteDePago]
 				SET MontoTotal = MontoTotal + @InterestMot
 				WHERE id = @inIdComprobante
@@ -122,6 +122,11 @@ BEGIN
 					WHERE R.id = @idRecibo
 					)
 			WHERE id = @inIdComprobante
+
+			IF EXISTS (SELECT RE.id FROM [dbo].[Reconexion] RE WHERE RE.id = @idRecibo)
+			BEGIN
+				EXEC csp_generarOrdReconexion @inFecha, @idPropiedad
+			END
 		END
 
 		COMMIT
