@@ -89,16 +89,6 @@ BEGIN
 								INNER JOIN [dbo].[Propiedad] F ON F.id = PP.idPropiedad
 								WHERE PP.id = @idEntidad 
 							FOR JSON PATH, ROOT('Propiedad-Propietario'))
-			SET @jsonDespues = (SELECT 
-								F.NumFinca AS 'Numero Finca',
-								P.nombre AS 'Propietario',
-								P.valorDocid AS 'Identificacion',
-								'Inactivo' AS 'Estado'
-								FROM [dbo].[PropiedadDelPropietario] PP
-								INNER JOIN [dbo].[Propietario] P ON P.id = PP.idPropietario
-								INNER JOIN [dbo].[Propiedad] F ON F.id = PP.idPropiedad
-								WHERE PP.id = @idEntidad 
-							FOR JSON PATH, ROOT('Propiedad-Propietario'))
 			
 			INSERT INTO [dbo].[Bitacora] (
 				idTipoEntidad,
@@ -112,7 +102,7 @@ BEGIN
 				T.id,
 				@idEntidad,
 				@jsonAntes,
-				@jsonDespues,
+				NULL,
 				GETDATE(),
 				@inputInsertedBy,
 				@inputInsertedIn

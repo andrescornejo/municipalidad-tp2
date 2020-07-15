@@ -11,13 +11,12 @@ CREATE
 	OR
 
 ALTER PROC csp_adminDeletePropiedad @inputNumFinca INT,
-	@inputInsertedBy NVARCHAR(100),
-	@inputInsertedIn NVARCHAR(100)
+	@inInsertedBy NVARCHAR(100),
+	@inInsertedIn NVARCHAR(100)
 AS
 BEGIN
 	BEGIN TRY
 		DECLARE @jsonAntes NVARCHAR(500)
-		DECLARE @jsonDepues NVARCHAR(500)
 		DECLARE @idEntidad INT
 		DECLARE @idPropiedad INT = (
 				SELECT P.id
@@ -26,7 +25,6 @@ BEGIN
 				);
 		DECLARE @tmpPropiedadDelPropietario TABLE (id INT)
 		DECLARE @tmpUsuarioVsPropiedad TABLE (id INT)
-		DECLARE @jsonAntes NVARCHAR(500)
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 
@@ -190,8 +188,8 @@ BEGIN
 			@jsonAntes,
 			NULL,
 			GETDATE(),
-			@inputInsertedBy,
-			@inputInsertedIn
+			@inInsertedBy,
+			@inInsertedIn
 		FROM dbo.TipoEntidad T
 		WHERE T.Nombre = 'Propiedad'
 
