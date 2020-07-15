@@ -1,5 +1,8 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="verPropiedadesDePropietario.aspx.cs" Inherits="Muni.Pages.VerPropietariosPage" %>
 
+<%@ Register Src="~/Pages/Admin/AdminPanelUC.ascx" TagPrefix="uc1" TagName="AdminPanelUC" %>
+
+
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -8,6 +11,8 @@
 </head>
 <body style="background-color:#2c3d63">
     <form id="form1" runat="server">
+
+        <uc1:AdminPanelUC runat="server" ID="AdminPanelUC" />
         <div>
             <asp:Button ID="backBtn" runat="server" Text="Back" Width="200px" BorderWidth="0px" Font-Bold="True" Font-Names="Bahnschrift" Font-Size="40px" ForeColor="White" style="margin-top:5px ;background-color:#ff6f5e" OnClick="backBtn_Click"/>
         </div>

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Web;
 using System.Web.UI.WebControls;
 
@@ -12,20 +14,55 @@ namespace Muni.Classes
     public static class Globals
     {
         #region LoginMethods
+        //TODO
         //Login info will be stored here. Not really safe, but safety doesn't matter in this case.
         private static string cURRENTUSER = "b"; //""
         private static bool iSADMIN = false;
         private static int uSERID = 2; //-1
+        private static string cURRENTIP = "MOTHERRUSSIA";
+
+        public static string CURRENTPANEL = "create"; //Can be set to create, update, or delete.
 
         public static string CURRENTUSER { get => cURRENTUSER; set => cURRENTUSER = value; }
         public static bool ISADMIN { get => iSADMIN; set => iSADMIN = value; }
         public static int USERID { get => uSERID; set => uSERID = value; }
+        public static string CURRENTIP { get => cURRENTIP; set => cURRENTIP = value; }
 
         public static void setUser(string username, bool isAdmin)
         {
             CURRENTUSER = username;
             ISADMIN = isAdmin;
             getUserID();
+            CURRENTIP = getLocalIPAddress();
+        }
+
+        //Metodo para el login
+        public static int login(string username, string password)
+        {
+            //Pido conexion
+            SqlConnection connection = getConnection();
+
+            //Preparar el comando
+            SqlCommand command = new SqlCommand("spLogin", connection);
+
+            //Especificar que es un sp
+            command.CommandType = CommandType.StoredProcedure;
+
+            //Agregar los parametros
+            command.Parameters.Add(new SqlParameter("@usernameInput", username));
+            command.Parameters.Add(new SqlParameter("@passwordInput", password));
+
+            var returnValue = command.Parameters.Add("@ReturnVal", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+
+            //Abro la conexion
+            connection.Open();
+            //Ejecuto el comando
+            command.ExecuteNonQuery();
+            //Cierro la conexion
+            connection.Close();
+
+            return (int)returnValue.Value;
         }
 
         public static void logoutUser()
@@ -33,6 +70,7 @@ namespace Muni.Classes
             CURRENTUSER = "";
             ISADMIN = false;
             USERID = -1;
+            CURRENTIP = "";
         }
 
         public static void getUserID()
@@ -57,8 +95,23 @@ namespace Muni.Classes
             USERID = spOutput;
         }
 
+        public static string getLocalIPAddress()
+        {
+            string localIP;
+            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+            {
+                socket.Connect("8.8.8.8", 65530);
+                IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+                localIP = endPoint.Address.ToString();
+            }
+            return localIP;
+        }
+
+
+
         #endregion
 
+        #region DatabaseMethods
         //The connection string is stored here.
 
         public static string CONNECTIONSTRING = Properties.Resources.CONNECTIONSTRING;
@@ -68,34 +121,7 @@ namespace Muni.Classes
             return new SqlConnection(CONNECTIONSTRING);
         }
 
-        //Metodo para el login
-        public static int login(string username, string password)
-        {
-            //Pido conexion
-            SqlConnection connection = getConnection();
-
-            //Preparar el comando
-            SqlCommand command = new SqlCommand("spLogin", connection);
-
-            //Especificar que es un sp
-            command.CommandType = CommandType.StoredProcedure;
-
-            //Agregar los parametros
-            command.Parameters.Add(new SqlParameter("@usernameInput", username));
-            command.Parameters.Add(new SqlParameter("@passwordInput",password));
-
-            var returnValue = command.Parameters.Add("@ReturnVal",SqlDbType.Int);
-            returnValue.Direction = ParameterDirection.ReturnValue;
-
-            //Abro la conexion
-            connection.Open();
-            //Ejecuto el comando
-            command.ExecuteNonQuery();
-            //Cierro la conexion
-            connection.Close();
-
-            return (int) returnValue.Value;
-        }
+        
 
         public static DataTable getPropietarios()
         {
@@ -376,31 +402,6 @@ namespace Muni.Classes
             connection.Close();
         }
 
-        public static void updatePropietario(string OldDocIDVal,string name, string docID, string docIDVal)
-        {
-            //Pido conexion
-            SqlConnection connection = getConnection();
-
-            //Preparo el comando
-            SqlCommand cmd = new SqlCommand("csp_adminUpdatePropietario", connection);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            //Agregar los parametros
-            cmd.Parameters.AddWithValue("@inputOLDDocID", OldDocIDVal);
-            cmd.Parameters.AddWithValue("@inputName", name);
-            cmd.Parameters.AddWithValue("@inputDocIDVal", docID);
-            cmd.Parameters.AddWithValue("@inputDocID", docIDVal);
-
-            //Abro la conexion
-            connection.Open();
-
-            //Ejecuto el SP
-            int rowAffected = cmd.ExecuteNonQuery();
-
-            //Cierro la conexion
-            connection.Close();
-        }
-
         public static void deletePropietario(string docID)
         {
             //Pido conexion
@@ -412,31 +413,6 @@ namespace Muni.Classes
 
             //Agregar los parametros
             cmd.Parameters.AddWithValue("@InputDocID", docID);
-
-            //Abro la conexion
-            connection.Open();
-
-            //Ejecuto el SP
-            int rowAffected = cmd.ExecuteNonQuery();
-
-            //Cierro la conexion
-            connection.Close();
-        }
-
-        public static void updateUsuario(string OldUsername, string username, string password, bool isAdmin)
-        {
-            //Pido conexion
-            SqlConnection connection = getConnection();
-
-            //Preparo el comando
-            SqlCommand cmd = new SqlCommand("csp_adminUpdateUsuario", connection);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            //Agregar los parametros
-            cmd.Parameters.AddWithValue("@inputOLDUsername", OldUsername);
-            cmd.Parameters.AddWithValue("@inputNewUsername", username);
-            cmd.Parameters.AddWithValue("@inputNewPassword", password);
-            cmd.Parameters.AddWithValue("@inputAdminStatus", isAdmin);
 
             //Abro la conexion
             connection.Open();
@@ -515,6 +491,6 @@ namespace Muni.Classes
             connection.Close();
         }
 
-
+        #endregion
     }
 }

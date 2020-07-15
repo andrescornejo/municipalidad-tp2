@@ -7,6 +7,9 @@ select 'a', '1', 1, 1
 insert Usuario(username, passwd, isAdmin, activo)
 select 'b', '1', 0, 1
 
+insert Usuario(username, passwd, isAdmin, activo)
+select 'lol', 'lol', 1, 1
+
 select * from Usuario
 
 INSERT Propiedad(NumFinca, Valor, Direccion, activo, ConsumoAcumuladoM3, UltimoConsumoM3)
@@ -106,4 +109,21 @@ insert Recibo(idComprobantePago, idPropiedad, idConceptoCobro, fecha, fechaVenci
 select 12, 1, 1, '2020-7-10', '2020-7-17', 50000, 1, 1
 
 select * from Recibo
+
+insert Bitacora(idTipoEntidad, idEntidad, jsonAntes, jsonDespues, insertedAt, insertedBy, insertedIn)
+values 
+(1, 2, '{"Propietario":[{"ID":1,"Nombre":"Ferrer S.A.","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '{"Propietario":[{"ID":1,"Nombre":"LMAOOOOOOOOOOO","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '2020-07-07', 'LePerv', 'LePerv'),
+(1, 2, '{"Propietario":[{"ID":1,"Nombre":"Ferrer S.A.","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '{"Propietario":[{"ID":1,"Nombre":"Ferrer S.A.","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '2020-07-07', 'LePerv', 'LePerv'),
+(1, 3, null, '{"Propietario":[{"ID":1,"Nombre":"Ferrer S.A.","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '2020-07-08', 'LePerv', 'LePerv'),
+(1, 3, null, '{"Propietario":[{"ID":1,"Nombre":"Ferrer S.A.","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '2020-07-09', 'LePerv', 'LePerv'),
+(1, 2, '{"Propietario":[{"ID":1,"Nombre":"Ferrer S.A.","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '{"Propietario":[{"ID":1,"Nombre":"Ferrer S.A.","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '2020-07-10', 'LePerv', 'LePerv')
+select * from Bitacora
+
+insert Propietario(idTipoDocID, nombre, valorDocID, activo)
+values
+(1, 'Rat Bastard', '1029384234', 1),
+(1, 'wee wee breath', '112341234', 1),
+(3, 'wee wee breff', '17547', 1)
+
+select * from Propietario
 

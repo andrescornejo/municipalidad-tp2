@@ -11,17 +11,17 @@ namespace Muni.Pages.Admin
 {
 
 
-    public partial class consultaCambioEntidad
+    public partial class crudPropiedades
     {
 
         /// <summary>
-        /// consultaCambiosForm control.
+        /// crudPropiedadesForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm consultaCambiosForm;
+        protected global::System.Web.UI.HtmlControls.HtmlForm crudPropiedadesForm;
 
         /// <summary>
         /// AdminPanelUC control.
@@ -33,129 +33,183 @@ namespace Muni.Pages.Admin
         protected global::Muni.Pages.Admin.AdminPanelUC AdminPanelUC;
 
         /// <summary>
-        /// welcomeLbl control.
+        /// dropCreate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label welcomeLbl;
+        protected global::System.Web.UI.WebControls.LinkButton dropCreate;
 
         /// <summary>
-        /// dropTipoEntidad control.
+        /// dropUpdate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList dropTipoEntidad;
+        protected global::System.Web.UI.WebControls.LinkButton dropUpdate;
 
         /// <summary>
-        /// tb_FormerDate control.
+        /// dropDelete control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox tb_FormerDate;
+        protected global::System.Web.UI.WebControls.LinkButton dropDelete;
 
         /// <summary>
-        /// tb_LatterDate control.
+        /// jtCreate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox tb_LatterDate;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl jtCreate;
 
         /// <summary>
-        /// verCambiosBtn control.
+        /// tb_CnumProp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button verCambiosBtn;
+        protected global::System.Web.UI.WebControls.TextBox tb_CnumProp;
 
         /// <summary>
-        /// gridTipoEntidad control.
+        /// tb_Cvalor control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gridTipoEntidad;
+        protected global::System.Web.UI.WebControls.TextBox tb_Cvalor;
 
         /// <summary>
-        /// upModal control.
+        /// tb_Cdir control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel upModal;
+        protected global::System.Web.UI.WebControls.TextBox tb_Cdir;
 
         /// <summary>
-        /// lblModalTitle control.
+        /// btnCreateProp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblModalTitle;
+        protected global::System.Web.UI.WebControls.Button btnCreateProp;
 
         /// <summary>
-        /// divJsonAntes control.
+        /// jtUpdate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divJsonAntes;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl jtUpdate;
 
         /// <summary>
-        /// lblJsonAntes control.
+        /// tb_UnumProp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblJsonAntes;
+        protected global::System.Web.UI.WebControls.TextBox tb_UnumProp;
 
         /// <summary>
-        /// gridJsonAntes control.
+        /// tb_Uval control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gridJsonAntes;
+        protected global::System.Web.UI.WebControls.TextBox tb_Uval;
 
         /// <summary>
-        /// divJsonDespues control.
+        /// tb_Udir control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divJsonDespues;
+        protected global::System.Web.UI.WebControls.TextBox tb_Udir;
 
         /// <summary>
-        /// lblJsonDespues control.
+        /// tb_Uacum control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblJsonDespues;
+        protected global::System.Web.UI.WebControls.TextBox tb_Uacum;
 
         /// <summary>
-        /// gridJsonDespues control.
+        /// tb_Uult control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gridJsonDespues;
+        protected global::System.Web.UI.WebControls.TextBox tb_Uult;
+
+        /// <summary>
+        /// hf_Uid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hf_Uid;
+
+        /// <summary>
+        /// btnUpdateProp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnUpdateProp;
+
+        /// <summary>
+        /// jtDelete control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl jtDelete;
+
+        /// <summary>
+        /// tb_DnumProp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tb_DnumProp;
+
+        /// <summary>
+        /// btnDeleteProp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDeleteProp;
+
+        /// <summary>
+        /// gridProp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gridProp;
     }
 }
