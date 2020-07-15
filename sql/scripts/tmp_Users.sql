@@ -7,6 +7,9 @@ select 'a', '1', 1, 1
 insert Usuario(username, passwd, isAdmin, activo)
 select 'b', '1', 0, 1
 
+insert Usuario(username, passwd, isAdmin, activo)
+select 'lol', 'lol', 1, 1
+
 select * from Usuario
 
 INSERT Propiedad(NumFinca, Valor, Direccion, activo, ConsumoAcumuladoM3, UltimoConsumoM3)
@@ -115,3 +118,12 @@ values
 (1, 3, null, '{"Propietario":[{"ID":1,"Nombre":"Ferrer S.A.","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '2020-07-09', 'LePerv', 'LePerv'),
 (1, 2, '{"Propietario":[{"ID":1,"Nombre":"Ferrer S.A.","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '{"Propietario":[{"ID":1,"Nombre":"Ferrer S.A.","Tipo DocID":"Cedula Juridica","Valor ID":"301659662","Estado":"Activo"}]}', '2020-07-10', 'LePerv', 'LePerv')
 select * from Bitacora
+
+insert Propietario(idTipoDocID, nombre, valorDocID, activo)
+values
+(1, 'Rat Bastard', '1029384234', 1),
+(1, 'wee wee breath', '112341234', 1),
+(3, 'wee wee breff', '17547', 1)
+
+select * from Propietario
+

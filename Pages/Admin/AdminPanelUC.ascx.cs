@@ -1,4 +1,5 @@
-﻿using Muni.Classes;
+﻿using Microsoft.SqlServer.Server;
+using Muni.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,25 @@ namespace Muni.Pages.Admin
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            this.lblUsername.Text = "Administrador: " + Globals.CURRENTUSER;
         }
 
         protected void logoutBtn_Click(object sender, EventArgs e)
         {
             Globals.logoutUser();
             Response.Redirect("../LoginPage.aspx");
+        }
+
+        public void alertMsg(string msg)
+        {
+            lblAlert.Text = msg;
+            this.alertDiv.Visible = true;
+        }
+
+        public void successMsg(string msg)
+        {
+            lblSucc.Text = msg;
+            this.successDiv.Visible = true;
         }
     }
 }

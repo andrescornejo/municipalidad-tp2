@@ -24,6 +24,15 @@ namespace Muni.Pages
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
+        /// AdminPanelUC control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Muni.Pages.Admin.AdminPanelUC AdminPanelUC;
+
+        /// <summary>
         /// backBtn control.
         /// </summary>
         /// <remarks>
