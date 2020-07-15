@@ -2,6 +2,7 @@
  * Stored Procedure: csp_adminDeletePropietario
  * Description: Borrado logico de Objeto Propietario
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO
@@ -10,8 +11,8 @@ CREATE
 	OR
 
 ALTER PROC csp_adminDeletePropietario @InputDocID NVARCHAR(20),
-@inputInsertBy NVARCHAR(100),
-@inputInsertIn NVARCHAR(20)
+@inputInsertedBy NVARCHAR(100),
+@inputInsertedIn NVARCHAR(20)
 AS
 BEGIN
 	BEGIN TRY
@@ -19,6 +20,8 @@ BEGIN
 
 		DECLARE @idPropietario INT
 		DECLARE @jsonAntes NVARCHAR(500)
+		DECLARE @idEntidad INT
+		DECLARE @tmpPropiedadDelPropietario TABLE (id INT)
 		
 		EXEC @idPropietario = csp_getPropietarioIDFromDocID @InputDocID
 
@@ -45,6 +48,9 @@ BEGIN
 		set activo = 0
 		WHERE idPropietario = @idPropietario
 
+		INSERT INTO @tmpPropiedadDelPropietario (id)
+		SELECT PP.id FROM [dbo].[PropiedadDelPropietario] PP WHERE PP.idPropietario = @idPropietario 
+
 		update Propietario
 		set activo = 0
 		WHERE id = @idPropietario
@@ -63,10 +69,56 @@ BEGIN
 			@jsonAntes,
 			null,
 			GETDATE(),
-			@inputInsertBy,
-			@inputInsertIn
+			@inputInsertedBy,
+			@inputInsertedIn
 		FROM [dbo].[TipoEntidad] T
 		WHERE T.Nombre = 'Propietario'
+
+		-- insert changes of PropiedadDelPropietario table into bitacora
+		WHILE (SELECT COUNT(*) FROM @tmpPropiedadDelPropietario) > 0
+		BEGIN
+			SET @idEntidad = (SELECT TOP 1 tmpP.id FROM @tmpPropiedadDelPropietario tmpP)
+			DELETE @tmpPropiedadDelPropietario WHERE id = @idEntidad
+			SET @jsonAntes = (SELECT 
+								F.NumFinca AS 'Numero Finca',
+								P.nombre AS 'Propietario',
+								P.valorDocid AS 'Identificacion',
+								'Activo' AS 'Estado'
+								FROM [dbo].[PropiedadDelPropietario] PP
+								INNER JOIN [dbo].[Propietario] P ON P.id = PP.idPropietario
+								INNER JOIN [dbo].[Propiedad] F ON F.id = PP.idPropiedad
+								WHERE PP.id = @idEntidad 
+							FOR JSON PATH, ROOT('Propiedad-Propietario'))
+			SET @jsonDespues = (SELECT 
+								F.NumFinca AS 'Numero Finca',
+								P.nombre AS 'Propietario',
+								P.valorDocid AS 'Identificacion',
+								'Inactivo' AS 'Estado'
+								FROM [dbo].[PropiedadDelPropietario] PP
+								INNER JOIN [dbo].[Propietario] P ON P.id = PP.idPropietario
+								INNER JOIN [dbo].[Propiedad] F ON F.id = PP.idPropiedad
+								WHERE PP.id = @idEntidad 
+							FOR JSON PATH, ROOT('Propiedad-Propietario'))
+			
+			INSERT INTO [dbo].[Bitacora] (
+				idTipoEntidad,
+				idEntidad,
+				jsonAntes,
+				jsonDespues,
+				insertedAt,
+				insertedBy,
+				insertedIn				
+			) SELECT 
+				T.id,
+				@idEntidad,
+				@jsonAntes,
+				@jsonDespues,
+				GETDATE(),
+				@inputInsertedBy,
+				@inputInsertedIn
+			FROM [dbo].[TipoEntidad] T
+			WHERE T.Nombre = 'PropiedadVsPropietario'
+		END
 		COMMIT
 
 		RETURN 1

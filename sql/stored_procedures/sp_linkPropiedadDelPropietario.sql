@@ -2,6 +2,7 @@
  * Stored Procedure: csp_linkPropiedadDelPropietario
  * Description: Links PropiedadDelPropietario table with Propiedad and Propietario
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO
@@ -9,20 +10,15 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_linkPropiedadDelPropietario @fechaInput DATE
+ALTER PROC csp_linkPropiedadDelPropietario @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-
-		DECLARE @OperacionXML XML
 		DECLARE @jsonDespues NVARCHAR(500)
 		DECLARE @FincaRef INT
-		DECLARE @PropRef INT
+		DECLARE @PropRef NVARCHAR(100)
 		DECLARE @idEntidad INT
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
 		DECLARE @hdoc INT
 
@@ -50,6 +46,7 @@ BEGIN
 				)
 		WHERE @fechaInput = fecha
 
+		EXEC sp_xml_removedocument @hdoc;
 		--select * from @tmpProtxProp
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION
@@ -62,9 +59,9 @@ BEGIN
 		SELECT PO.id,
 			P.id,
 			1
-		FROM @tmpProtxProp AS pp
-		JOIN Propietario P ON P.valorDocID = pp.identificacion
-		JOIN Propiedad PO ON PO.NumFinca = pp.NumFinca
+		FROM @tmpProtxProp AS tmp
+		JOIN Propietario P ON P.valorDocID = tmp.identificacion
+		JOIN Propiedad PO ON PO.NumFinca = tmp.NumFinca
 		
 		--select * from PropiedadDelPropietario
 
@@ -77,7 +74,7 @@ BEGIN
 			SET @idEntidad = (SELECT pp.id FROM [dbo].[PropiedadDelPropietario] pp
 							INNER JOIN Propietario P ON P.valorDocID = @PropRef
 							INNER JOIN Propiedad PO ON PO.NumFinca = @FincaRef
-							WHERE P.id = pp.idPropietario AND PO.id = idPropiedad)
+							WHERE P.id = pp.idPropietario AND PO.id = pp.idPropiedad)
 
 			SET @jsonDespues = (SELECT 
 								@FincaRef AS 'Numero Finca',
@@ -99,7 +96,7 @@ BEGIN
 				T.id,
 				@idEntidad,
 				@jsonDespues,
-				GETDATE(),
+				@fechaInput,
 				CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
 				'192.168.1.7'
 			FROM [dbo].[TipoEntidad] T
