@@ -16,8 +16,7 @@ BEGIN
     DECLARE @jsonDespues NVARCHAR(500)
     DECLARE @idEntidad INT
 
-    SET @idEntidad = (SELECT TOP 1 P.id FROM [dbo].[Propiedad] P ORDER BY P.id DESC)
-    
+        set @idEntidad = (select p.id from inserted P)
         SET @jsonDespues = (SELECT 
                                 P.NumFinca AS 'Numero Finca',
                                 P.valor AS 'Valor',
@@ -25,12 +24,13 @@ BEGIN
                                 'Activo' AS 'Estado',
                                 P.ConsumoAcumuladoM3 AS 'Consumo Acumuluado M3',
                                 P.UltimoConsumoM3 AS 'Consumo Acumulado M3 ultimo recibo'
-                            FROM [dbo].[Propiedad] P WHERE P.id = @idEntidad
+                            FROM inserted P
                             FOR JSON PATH, ROOT('Propiedad'))
 
         INSERT INTO [dbo].[Bitacora] (
             idTipoEntidad,
             idEntidad,
+            jsonAntes,
             jsonDespues,
             insertedAt,
             insertedBy,
@@ -39,10 +39,11 @@ BEGIN
         SELECT
             T.id,
             @idEntidad,
+            null,
             @jsonDespues,
             GETDATE(),
             CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
-	    	'192.168.1.7'
+	    	'SERVER IP'
         FROM [dbo].[TipoEntidad] T WHERE T.Nombre = 'Propiedad'
 
 END

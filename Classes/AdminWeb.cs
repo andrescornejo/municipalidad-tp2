@@ -263,8 +263,8 @@ namespace Muni.Classes
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@inputNumFinca", numFinca);
-            cmd.Parameters.AddWithValue("@inputInsertedBy", user);
-            cmd.Parameters.AddWithValue("@inputInsertedIn", ip);
+            cmd.Parameters.AddWithValue("@inInsertedBy", user);
+            cmd.Parameters.AddWithValue("@inInsertedIn", ip);
 
             connection.Open();
             cmd.ExecuteNonQuery();
@@ -278,8 +278,8 @@ namespace Muni.Classes
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@inputDocID", docid);
-            cmd.Parameters.AddWithValue("@inputInsertBy", user);
-            cmd.Parameters.AddWithValue("@inputInsertIn", ip);
+            cmd.Parameters.AddWithValue("@inputInsertedBy", user);
+            cmd.Parameters.AddWithValue("@inputInsertedIn", ip);
 
             connection.Open();
             cmd.ExecuteNonQuery();

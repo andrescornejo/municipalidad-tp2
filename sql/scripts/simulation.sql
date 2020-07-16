@@ -54,5 +54,6 @@ BEGIN
 	EXEC csp_generarReciboCCPorcentaje @firstDate
 	EXEC csp_generarRecibosAgua @firstDate
 	EXEC csp_agregarPagos @firstDate, @FechasOperacionXML
+	exec csp_generarOrdCorta @firstDate
 	SET @firstDate = dateadd(day, 1, @firstDate);
 END

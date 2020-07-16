@@ -40,7 +40,7 @@ BEGIN
 			IF (SELECT COUNT(R.id) FROM [dbo].[Recibo] R 
 				WHERE R.idPropiedad = @idPropiedad 
 				AND idConceptoCobro = 1 AND R.esPendiente = 1
-				AND NOT EXISTS (SELECT R.id FROM [dbo].[Recibo] R WHERE idPropiedad = @idPropiedad
+				AND NOT EXISTS (SELECT top 1 R.id FROM [dbo].[Recibo] R WHERE idPropiedad = @idPropiedad
 				AND idConceptoCobro = 11)) > 1
 			BEGIN
 				-- Recibo de reconexion

@@ -6,17 +6,6 @@
 USE municipalidad
 GO
 
-IF EXISTS (
-		SELECT *
-		FROM sysobjects
-		WHERE id = object_id(N'[dbo].[csp_agregarTransConsumo]')
-			AND OBJECTPROPERTY(id, N'IsProcedure') = 1
-		)
-BEGIN
-	DROP PROCEDURE dbo.csp_agregarTransConsumo
-END
-GO
-
 CREATE
 	OR
 
@@ -92,7 +81,8 @@ BEGIN
 				tmp.FechaXml,
 				@MontoM3,
 				tmp.LecturaM3,
-				(CASE WHEN @idTipoTrans = 1 THEN tmp.LecturaM3 - P.UltimoConsumoM3
+				(CASE WHEN @idTipoTrans = 1 THEN tmp.LecturaM3
+					WHEN @idTipoTrans = 2 then P.ConsumoAcumuladoM3 - tmp.LecturaM3
 					ELSE P.ConsumoAcumuladoM3 + tmp.LecturaM3
 				END),
 				1,

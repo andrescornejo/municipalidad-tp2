@@ -30,7 +30,6 @@ BEGIN
 		WHERE R.idPropiedad = P.id
 			AND R.activo = 1
 			AND R.esPendiente = 0
-
 		WHILE (
 				SELECT COUNT(*)
 				FROM @tmpIdComprob

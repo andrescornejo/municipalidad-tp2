@@ -7,18 +7,7 @@
 USE municipalidad
 GO
 
-IF EXISTS (
-		SELECT *
-		FROM sysobjects
-		WHERE id = object_id(N'[dbo].[csp_agregarPropietarios]')
-			AND OBJECTPROPERTY(id, N'IsProcedure') = 1
-		)
-BEGIN
-	DROP PROCEDURE dbo.csp_agregarPropietarios
-END
-GO
-
-CREATE PROC csp_agregarPropietarios @fechaInput DATE, @OperacionXML XML
+CREATE or alter PROC csp_agregarPropietarios @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY

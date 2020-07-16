@@ -11,8 +11,8 @@ CREATE
 	OR
 
 ALTER PROC csp_adminDeletePropietario @InputDocID NVARCHAR(20),
-@inputInsertedBy NVARCHAR(100),
-@inputInsertedIn NVARCHAR(20)
+	@inputInsertedBy NVARCHAR(100),
+	@inputInsertedIn NVARCHAR(20)
 AS
 BEGIN
 	BEGIN TRY
@@ -22,7 +22,13 @@ BEGIN
 		DECLARE @jsonAntes NVARCHAR(500)
 		DECLARE @idEntidad INT
 		DECLARE @tmpPropiedadDelPropietario TABLE (id INT)
-		
+
+		SET @idEntidad = (
+				SELECT p.id
+				FROM Propietario p
+				WHERE p.valorDocID = @InputDocID
+				)
+
 		EXEC @idPropietario = csp_getPropietarioIDFromDocID @InputDocID
 
 		SET @jsonAntes = (
@@ -36,38 +42,40 @@ BEGIN
 				FOR JSON PATH,
 					ROOT('Propietario')
 				)
-
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+
 		BEGIN TRANSACTION
 
-		update PropietarioJuridico
-		set activo = 0
+		UPDATE PropietarioJuridico
+		SET activo = 0
 		WHERE id = @idPropietario
 
-		update PropiedadDelPropietario
-		set activo = 0
+		UPDATE PropiedadDelPropietario
+		SET activo = 0
 		WHERE idPropietario = @idPropietario
 
 		INSERT INTO @tmpPropiedadDelPropietario (id)
-		SELECT PP.id FROM [dbo].[PropiedadDelPropietario] PP WHERE PP.idPropietario = @idPropietario 
+		SELECT PP.id
+		FROM [dbo].[PropiedadDelPropietario] PP
+		WHERE PP.idPropietario = @idPropietario
 
-		update Propietario
-		set activo = 0
+		UPDATE Propietario
+		SET activo = 0
 		WHERE id = @idPropietario
 
 		INSERT INTO [dbo].[Bitacora] (
 			idTipoEntidad,
 			idEntidad,
-			jsonAntes, 
+			jsonAntes,
 			jsonDespues,
 			insertedAt,
 			insertedBy,
 			insertedIn
-		) SELECT
-			T.id,
+			)
+		SELECT T.id,
 			@idPropietario,
 			@jsonAntes,
-			null,
+			NULL,
 			GETDATE(),
 			@inputInsertedBy,
 			@inputInsertedIn
@@ -75,21 +83,32 @@ BEGIN
 		WHERE T.Nombre = 'Propietario'
 
 		-- insert changes of PropiedadDelPropietario table into bitacora
-		WHILE (SELECT COUNT(*) FROM @tmpPropiedadDelPropietario) > 0
+		WHILE (
+				SELECT COUNT(*)
+				FROM @tmpPropiedadDelPropietario
+				) > 0
 		BEGIN
-			SET @idEntidad = (SELECT TOP 1 tmpP.id FROM @tmpPropiedadDelPropietario tmpP)
-			DELETE @tmpPropiedadDelPropietario WHERE id = @idEntidad
-			SET @jsonAntes = (SELECT 
-								F.NumFinca AS 'Numero Finca',
-								P.nombre AS 'Propietario',
-								P.valorDocid AS 'Identificacion',
-								'Activo' AS 'Estado'
-								FROM [dbo].[PropiedadDelPropietario] PP
-								INNER JOIN [dbo].[Propietario] P ON P.id = PP.idPropietario
-								INNER JOIN [dbo].[Propiedad] F ON F.id = PP.idPropiedad
-								WHERE PP.id = @idEntidad 
-							FOR JSON PATH, ROOT('Propiedad-Propietario'))
-			
+			SET @idEntidad = (
+					SELECT TOP 1 tmpP.id
+					FROM @tmpPropiedadDelPropietario tmpP
+					)
+
+			DELETE @tmpPropiedadDelPropietario
+			WHERE id = @idEntidad
+
+			SET @jsonAntes = (
+					SELECT F.NumFinca AS 'Numero Finca',
+						P.nombre AS 'Propietario',
+						P.valorDocid AS 'Identificacion',
+						'Activo' AS 'Estado'
+					FROM [dbo].[PropiedadDelPropietario] PP
+					INNER JOIN [dbo].[Propietario] P ON P.id = PP.idPropietario
+					INNER JOIN [dbo].[Propiedad] F ON F.id = PP.idPropiedad
+					WHERE PP.id = @idEntidad
+					FOR JSON PATH,
+						ROOT('Propiedad-Propietario')
+					)
+
 			INSERT INTO [dbo].[Bitacora] (
 				idTipoEntidad,
 				idEntidad,
@@ -97,9 +116,9 @@ BEGIN
 				jsonDespues,
 				insertedAt,
 				insertedBy,
-				insertedIn				
-			) SELECT 
-				T.id,
+				insertedIn
+				)
+			SELECT T.id,
 				@idEntidad,
 				@jsonAntes,
 				NULL,
@@ -109,6 +128,7 @@ BEGIN
 			FROM [dbo].[TipoEntidad] T
 			WHERE T.Nombre = 'PropiedadVsPropietario'
 		END
+
 		COMMIT
 
 		RETURN 1
