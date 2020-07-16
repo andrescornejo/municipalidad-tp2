@@ -79,44 +79,50 @@ BEGIN
 				-- Tomamos la primera propiedad
 				SELECT TOP 1 @idPropiedad = tmp.idPropiedad
 				FROM @tmpPropiedadesCC_Agua tmp
-
 				-- Luego la eliminamos de la tabla
 				DELETE @tmpPropiedadesCC_Agua
 				WHERE idPropiedad = @idPropiedad
+				
+				-- Verificar si existe una recibo de reconexion sin pagar 
+				-- quiere decir que el agua esta cortada y no deberia realizar recibos de agua				
+				IF (SELECT COUNT(R.id) FROM [dbo].[Recibo] R 
+					WHERE R.idPropiedad = @idPropiedad AND
+					R.esPendiente = 1 AND R.idConceptoCobro = 10) = 0 
+				BEGIN
+					-- obtenemos el consumo
+					SET @ConsumoM3 = (
+							SELECT P.ConsumoAcumuladoM3
+							FROM [dbo].[Propiedad] P
+							WHERE P.id = @idPropiedad
+							)
+					-- el consumo hasta el ultimo recibo generado
+					SET @UltimoConsumoM3 = (
+							SELECT P.UltimoConsumoM3
+							FROM [dbo].[Propiedad] P
+							WHERE P.id = @idPropiedad
+							)
+					-- calculamos el monto cosumido en el ultimo mes
+					SET @Monto = CASE 
+							WHEN (@ConsumoM3 - @UltimoConsumoM3) * @ValorM3 > @MontoMinimo
+								THEN (@ConsumoM3 - @UltimoConsumoM3) * @ValorM3
+							ELSE @MontoMinimo
+							END
 
-				-- obtenemos el consumo
-				SET @ConsumoM3 = (
-						SELECT P.ConsumoAcumuladoM3
-						FROM [dbo].[Propiedad] P
-						WHERE P.id = @idPropiedad
+					-- Creamos el recibo temporal 
+					INSERT INTO @tmpRecibos (
+						idPropiedad,
+						idConceptoCobro,
+						Fecha,
+						FechaVencimiento,
+						Monto
 						)
-				-- el consumo hasta el ultimo recibo generado
-				SET @UltimoConsumoM3 = (
-						SELECT P.UltimoConsumoM3
-						FROM [dbo].[Propiedad] P
-						WHERE P.id = @idPropiedad
-						)
-				-- calculamos el monto cosumido en el ultimo mes
-				SET @Monto = CASE 
-						WHEN (@ConsumoM3 - @UltimoConsumoM3) * @ValorM3 > @MontoMinimo
-							THEN (@ConsumoM3 - @UltimoConsumoM3) * @ValorM3
-						ELSE @MontoMinimo
-						END
-
-				-- Creamos el recibo temporal 
-				INSERT INTO @tmpRecibos (
-					idPropiedad,
-					idConceptoCobro,
-					Fecha,
-					FechaVencimiento,
-					Monto
-					)
-				SELECT @idPropiedad,
-					@idCCAgua,
-					@inFecha,
-					DATEADD(DAY, @QDias, @inFecha),
-					@Monto
-			END
+					SELECT @idPropiedad,
+						@idCCAgua,
+						@inFecha,
+						DATEADD(DAY, @QDias, @inFecha),
+						@Monto
+				END
+			END	
 		END
 		-- Agreamos otra vez las propiedades 
 		INSERT INTO @tmpPropiedadesCC_Agua (idPropiedad)
