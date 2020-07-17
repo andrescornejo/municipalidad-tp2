@@ -23,6 +23,8 @@ BEGIN
 		P.Direccion AS [Direccion]
 	FROM Propiedad P
 	JOIN PropiedadDelPropietario PP ON P.id = PP.idPropietario
+		AND PP.activo = 1
 	WHERE @idPropietario = PP.idPropietario
+		AND P.activo = 1
 END
 	--EXEC csp_getPropiedadesDePropietario 301410305

@@ -1,6 +1,6 @@
 /*
  * Stored Procedure: csp_getPropiedadIDFromNumFinca
- * Description: 
+ * Description: Retorna el id de una propiedad, a partir de su numero de finca.
  * Author: Andres Cornejo
  */
 USE municipalidad
@@ -21,6 +21,7 @@ BEGIN
 				SELECT TOP 1 p.id
 				FROM Propiedad P
 				WHERE p.NumFinca = @inputNumFinca
+				AND p.activo = 1
 				)
 
 		RETURN @outputID

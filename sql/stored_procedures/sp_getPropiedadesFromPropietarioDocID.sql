@@ -26,7 +26,9 @@ BEGIN
 			p.Direccion AS 'Dirección'
 		FROM Propiedad p
 		JOIN PropiedadDelPropietario pdp ON pdp.idPropiedad = p.id
-		WHERE @idPropietario = pdp.idPropietario
+			AND pdp.activo = 1
+		WHERE @idPropietario = pdp.idPropietario 
+		AND p.activo = 1
 	END TRY
 
 	BEGIN CATCH

@@ -1,6 +1,6 @@
 /*
  * Stored Procedure: csp_getPropietarioIDFromDocID
- * Description: 
+ * Description: Retorna el id de un Propietario, a partir de su numero de DocID
  * Author: Andres Cornejo
  */
 USE municipalidad
@@ -21,6 +21,7 @@ BEGIN
 				SELECT TOP 1 p.id
 				FROM Propietario p
 				WHERE p.valorDocID = @inputDocID
+				AND p.activo = 1
 				)
 
 		RETURN @outputID

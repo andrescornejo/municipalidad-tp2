@@ -79,16 +79,6 @@ namespace Muni.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ColorPalette {
-            get {
-                object obj = ResourceManager.GetObject("ColorPalette", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Data Source=HOTHEAD\SQLEXPRESS;Initial Catalog=municipalidad;Integrated Security=True.
         /// </summary>
         internal static string CONNECTIONSTRING {

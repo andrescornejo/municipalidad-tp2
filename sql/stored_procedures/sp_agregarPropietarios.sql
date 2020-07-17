@@ -2,31 +2,19 @@
  * Stored Procedure: csp_agregarPropietarios
  * Description: 
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO
 
-IF EXISTS (
-		SELECT *
-		FROM sysobjects
-		WHERE id = object_id(N'[dbo].[csp_agregarPropietarios]')
-			AND OBJECTPROPERTY(id, N'IsProcedure') = 1
-		)
-BEGIN
-	DROP PROCEDURE dbo.csp_agregarPropietarios
-END
-GO
-
-CREATE PROC csp_agregarPropietarios @fechaInput DATE
+CREATE or alter PROC csp_agregarPropietarios @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-
-		DECLARE @OperacionXML XML
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
+		DECLARE @jsonDespues NVARCHAR(500)
+		DECLARE @valorDocID NVARCHAR(100)
+		DECLARE @idEntidad INT
 
 		DECLARE @hdoc INT
 
@@ -60,22 +48,60 @@ BEGIN
 
 		EXEC sp_xml_removedocument @hdoc;
 
-		-- SELECT * FROM @tmpPropiet
-
+		--SELECT COUNT(*) FROM @tmpPropiet
+		-- Proceso masivo
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-
 		BEGIN TRANSACTION
 
 		INSERT dbo.Propietario (
 			nombre,
 			idTipoDocID,
-			valorDocID
+			valorDocID,
+			activo
 			)
 		SELECT tp.nombre,
 			tp.idTipoDocID,
-			tp.valorDocID
+			tp.valorDocID,
+			1
 		FROM @tmpPropiet tp
+		
+		-- insert into bitacora
 
+		WHILE (SELECT COUNT(*) FROM @tmpPropiet) > 0
+		BEGIN
+			SET @valorDocID = (SELECT TOP 1 tmp.valorDocID FROM @tmpPropiet tmp)
+			SET @idEntidad = (SELECT P.id FROM [dbo].[Propietario] P WHERE P.valorDocID = @valorDocID)
+			DELETE @tmpPropiet WHERE valorDocID = @valorDocID
+
+			SET @jsonDespues = (SELECT 
+								P.id AS 'ID', 
+								P.nombre AS 'Nombre', 
+								T.nombre AS 'Tipo DocID' , 
+								@valorDocID AS 'Valor ID', 
+								'Activo' AS 'Estado'
+							FROM [dbo].[Propietario] P
+							JOIN [dbo].[TipoDocID] T ON T.id = P.idTipoDocID
+							WHERE P.valorDocID = @valorDocID
+							FOR JSON PATH,ROOT('Propietario'))
+
+			INSERT INTO [dbo].[Bitacora] (
+				idTipoEntidad,
+				idEntidad, 
+				jsonDespues,
+				insertedAt,
+				insertedBy,
+				insertedIn
+			) SELECT
+				T.id,
+				@idEntidad,
+				@jsonDespues,
+				GETDATE(),
+				CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
+				'192.168.1.7'
+			FROM [dbo].[TipoEntidad] T
+			WHERE T.Nombre = 'Propietario'
+
+		END
 		COMMIT
 
 		RETURN 1

@@ -4,14 +4,13 @@
 USE municipalidad
 GO
 
-DECLARE @hdoc INT;
 
 SET IDENTITY_INSERT ConceptoCobro ON
-
+DECLARE @hdoc INT;
 DECLARE @ConceptoCobroXML XML;
 
 SELECT @ConceptoCobroXML = C
-FROM openrowset(BULK 'C:\xml\concepto_cobro.xml', single_blob) AS ConceptoCobro(C)
+FROM openrowset(BULK 'C:\xml\ConceptoDeCobro.xml', single_blob) AS ConceptoCobro(C)
 
 EXEC sp_xml_preparedocument @hdoc OUT,
 	@ConceptoCobroXML
@@ -23,15 +22,19 @@ INSERT dbo.ConceptoCobro (
 	DiaEmisionRecibo,
 	QDiasVencimiento,
 	EsRecurrente,
-	EsImpuesto
+	EsFijo,
+	EsImpuesto,
+	activo
 	)
-SELECT id,
-	Nombre,
-	TasaInteresMoratoria,
-	DiaCobro,
-	QDiasVencimiento,
-	EsRecurrente,
-	EsImpuesto
+SELECT X.id,
+	X.Nombre,
+	X.TasaInteresMoratoria,
+	X.DiaCobro,
+	X.QDiasVencimiento,
+	X.EsRecurrente,
+	X.EsFijo,
+	X.EsImpuesto,
+	1
 FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 		id INT,
 		Nombre NVARCHAR(MAX),
@@ -39,43 +42,58 @@ FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 		DiaCobro INT,
 		QDiasVencimiento INT,
 		EsRecurrente BIT,
+		EsFijo BIT,
 		EsImpuesto BIT
-		)
+		) AS X
 
 INSERT dbo.CC_ConsumoAgua (
 	id,
-	ConsumoM3
+	ValorM3,
+	MontoMinimo,
+	activo
 	)
-SELECT id,
-	ConsumoM3
-FROM openxml(@hdoc, '/Conceptos_de_Cobro/ccagua', 1) WITH (
+SELECT X.id,
+	X.ValorM3,
+	X.MontoMinRecibo,
+	1
+FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 		id INT,
-		ConsumoM3 INT
-		)
+		ValorM3 MONEY,
+		MontoMinRecibo MONEY,
+		TipoCC NVARCHAR(10)
+		) AS X
+WHERE X.TipoCC = 'CC Consumo'
 
 INSERT dbo.CC_Porcentaje (
 	id,
-	ValorPorcentaje
-	)
-SELECT id,
-	ValorPorcentaje
-FROM openxml(@hdoc, '/Conceptos_de_Cobro/ccporcentual', 1) WITH (
+	ValorPorcentaje,
+	activo)
+SELECT X.id,
+	X.ValorPorcentaje,
+	1
+FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 		id INT,
-		ValorPorcentaje FLOAT
-		)
+		ValorPorcentaje FLOAT,
+		TipoCC NVARCHAR(13)
+		) AS X
+WHERE X.TipoCC = 'CC Porcentaje'
 
 INSERT dbo.CC_Fijo (
 	id,
-	MontoFijo
+	Monto,
+	activo
 	)
-SELECT id,
-	Monto
-FROM openxml(@hdoc, '/Conceptos_de_Cobro/ccfijo', 1) WITH (
-		id INT,
-		Monto MONEY
-		)
+SELECT X.id,
+	X.Monto,
+	1
+FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
+	id INT,
+	Monto MONEY,
+	TipoCC NVARCHAR(7)
+	) AS X
+WHERE X.TipoCC = 'CC Fijo'
 
-SELECT *
+/*SELECT *
 FROM ConceptoCobro
 
 SELECT *
@@ -85,7 +103,7 @@ SELECT *
 FROM CC_Porcentaje
 
 SELECT *
-FROM CC_Fijo
+FROM CC_Fijo*/
 
 EXEC sp_xml_removedocument @hdoc
 GO
