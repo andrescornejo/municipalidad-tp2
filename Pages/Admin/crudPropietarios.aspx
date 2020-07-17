@@ -106,7 +106,7 @@
                     <Columns>
                         <asp:TemplateField>
                             <ItemTemplate>
-                                <asp:Button ID="btnSelectRow" CssClass="btn btn-info" Text="Seleccionar propiedad" runat="server" CommandName="Select" CommandArgument="<%# Container.DataItemIndex %>"/>
+                                <asp:Button ID="btnSelectRow" CssClass="btn btn-info" Text="Seleccionar propietario" runat="server" CommandName="Select" CommandArgument="<%# Container.DataItemIndex %>"/>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="name" HeaderText="Nombre" />

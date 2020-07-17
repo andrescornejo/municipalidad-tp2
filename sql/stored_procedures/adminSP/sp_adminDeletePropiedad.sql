@@ -173,25 +173,25 @@ BEGIN
 		FOR JSON PATH,
 			ROOT('Propiedad')
 		)
-
-		INSERT Bitacora (
-			idTipoEntidad,
-			idEntidad,
-			jsonAntes,
-			jsonDespues,
-			insertedAt,
-			insertedBy,
-			insertedIn
-			)
-		SELECT t.id,
-			@idPropiedad,
-			@jsonAntes,
-			NULL,
-			GETDATE(),
-			@inInsertedBy,
-			@inInsertedIn
-		FROM dbo.TipoEntidad T
-		WHERE T.Nombre = 'Propiedad'
+--Logging is disabled since the trigger takes care of this.
+		-- INSERT Bitacora (
+		-- 	idTipoEntidad,
+		-- 	idEntidad,
+		-- 	jsonAntes,
+		-- 	jsonDespues,
+		-- 	insertedAt,
+		-- 	insertedBy,
+		-- 	insertedIn
+		-- 	)
+		-- SELECT t.id,
+		-- 	@idPropiedad,
+		-- 	@jsonAntes,
+		-- 	NULL,
+		-- 	GETDATE(),
+		-- 	@inInsertedBy,
+		-- 	@inInsertedIn
+		-- FROM dbo.TipoEntidad T
+		-- WHERE T.Nombre = 'Propiedad'
 
 		COMMIT
 
